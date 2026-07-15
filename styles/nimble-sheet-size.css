@@ -1,0 +1,26 @@
+/* ------------------------------------------------------------------
+   Taille de la fiche de personnage Nimble
+   ------------------------------------------------------------------
+   Nimble impose à la fiche PJ une largeur inline de 367px (voir Gr.playerCharacter
+   dans le bundle du système). Dans la fenêtre plus petite de l'app Electron, la
+   fiche tombe sous sa largeur minimale et la mise en page casse (zones vides /
+   contenu tronqué).
+
+   On force ici la même taille qu'une fiche D&D 5e (800 x 1000 px).
+   `min-width` / `min-height` contraignent la taille calculée par-dessus les valeurs
+   inline posées par Foundry, tout en laissant la fiche redimensionnable plus grand.
+
+   Chargé depuis le module -> survit aux mises à jour du système Nimble.
+   Pour ajuster : change les deux valeurs ci-dessous (ex : 500px si 800 est trop
+   large pour ta fenêtre ou étire trop la mise en page de Nimble).
+   ------------------------------------------------------------------ */
+
+.system-nimble .nimble-sheet--player-character:not(.minimized) {
+    min-width: 800px;
+    min-height: 1000px;
+}
+
+.system-nimble .nimble-sheet--npc:not(.minimized) {
+    min-width: 800px;
+    min-height: 1000px;
+}

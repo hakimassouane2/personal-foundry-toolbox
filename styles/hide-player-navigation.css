@@ -1,0 +1,7 @@
+@layer modules { @layer toolbox-compact {
+  /* Cacher la navigation de scènes — joueurs uniquement */
+  body.toolbox-player #scene-navigation,
+  body.toolbox-player #scene-navigation-expand {
+    display: none !important;
+  }
+} }

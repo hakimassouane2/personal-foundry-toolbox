@@ -1,0 +1,40 @@
+/* =========================================================================
+   Toolbox — Fond uni pour l'onglet Chat de la barre latérale (Foundry v13)
+   -------------------------------------------------------------------------
+   Depuis la v13, le core rend l'onglet Chat transparent, si bien que les
+   messages « flottent » par-dessus le canvas alors que tous les autres onglets
+   (Acteurs, Objets, Journal…) ont un fond uni. La règle responsable, dans le
+   layer `applications` du core :
+
+       .chat-sidebar:not(.sidebar-popout) { background: transparent; }
+
+   On la neutralise en redonnant au chat le MÊME fond que les autres onglets,
+   c'est-à-dire la valeur exacte de `.sidebar-tab` :
+
+       background: var(--sidebar-background, var(--color-cool-5-90));
+
+   `--sidebar-background` est une variable de thème du core (fond sombre en
+   thème dark, parchemin en thème light) : le rendu reste donc parfaitement
+   cohérent avec le reste de la barre, quel que soit le thème.
+
+   Le wrapping `@layer modules { … }` suffit à passer devant le core sans
+   `!important` : l'ordre des layers déclaré par Foundry place `modules` après
+   `applications`. On cible `#sidebar-content #chat` (l'onglet dans la barre)
+   pour ne toucher NI le pop-out, NI l'overlay de notifications `#chat-notifications`,
+   qui doivent rester transparents.
+   ========================================================================= */
+
+@layer modules { @layer toolbox-chat-bg {
+
+  #sidebar-content #chat.chat-sidebar {
+    /* Même fond que les autres onglets (valeur exacte de `.sidebar-tab`). */
+    background: var(--sidebar-background, var(--color-cool-5-90));
+
+    /* Le core force le chat à `width: 100%` = largeur du contenu (300px) + la
+       gouttière de défilement de 12px, si bien que son fond déborde de 12px
+       vers la gauche par rapport aux onglets répertoires (fixés à 300px). On
+       le ramène à la même largeur pour un alignement parfait. */
+    width: var(--sidebar-width);
+  }
+
+} }

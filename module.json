@@ -1,0 +1,56 @@
+{
+  "id": "personal-foundry-toolbox",
+  "title": "Personal Foundry Toolbox",
+  "description": "A personal toolbox for managing and organizing my own Foundry VTT tools/macros/shortcuts/scripts.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13",
+    "maximum": "13"
+  },
+  "authors": [
+    {
+      "name": "hakim"
+    }
+  ],
+  "socket": true,
+  "esmodules": [
+    "scripts/tool-shortcut.mjs",
+    "scripts/hide-player-navigation.mjs",
+    "scripts/auto-unpause.mjs",
+    "scripts/default-deletion-dialog-to-yes.mjs",
+    "scripts/map-browser.mjs",
+    "scripts/hide-npc-names-nimble.mjs",
+    "scripts/shared-timer.mjs"
+  ],
+  "styles": [
+    "styles/toolbox-compact-sidebar.css",
+    "styles/hide-player-navigation.css",
+    "styles/map-browser.css",
+    "styles/nimble-sheet-size.css",
+    "styles/nimble-speed-height-fix.css",
+    "styles/shared-timer.css",
+    "styles/chat-solid-background.css"
+  ],
+  "relationships": {
+    "recommends": [
+      {
+        "id": "scene-express",
+        "type": "module",
+        "reason": "Le navigateur de maps délègue la création de scène à Scene Express."
+      }
+    ]
+  },
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json"
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+/* =========================================================================
+   Toolbox — Sidebar compacte (Foundry v13 / v14)
+   -------------------------------------------------------------------------
+   Fusion nettoyée des fichiers "optional-compact-*" de Plutonium.
+   Portable sur N'IMPORTE QUEL système : ne cible que des IDs d'onglets et
+   des classes de type du core Foundry (.actor, .item, .scene, .journalentry…),
+   jamais de classes de fiche 5e/PF2e.
+
+   RETIRÉ (dépendant de Plutonium) :
+     - tout le compact-chat  (classes .chatmsg__trim-* posées par Plutonium)
+     - le bouton .dir__btn-header  (bouton propre à Plutonium)
+
+   Chargement : liste ce fichier dans ton module.json
+       "styles": ["styles/toolbox-compact-sidebar.css"]
+   Le wrapping @layer modules { … } garde la priorité sur le core sans
+   !important. Tu peux renommer le sous-layer "toolbox-compact" à ta guise ;
+   l'important est qu'il reste DANS le layer `modules`.
+   ========================================================================= */
+
+@layer modules { @layer toolbox-compact {
+
+  /* ===== Entrées AVEC vignette : acteurs, items, macros, tables, cartes =====
+     Le rognage de la vignette (clip-path + marges négatives) est calibré pour
+     line-height:24px — si tu changes la hauteur, réajuste ces valeurs. */
+  :is(#actors,#actors-popout,#items,#items-popout,#macros,#macros-popout,
+      #tables,#tables-popout,#cards,#cards-popout)
+    .directory-item:is(.actor,.item,.macro,.rolltable,.cards) {
+    position: relative;
+    line-height: 24px;
+  }
+  :is(#actors,#actors-popout,#items,#items-popout,#macros,#macros-popout,
+      #tables,#tables-popout,#cards,#cards-popout)
+    .directory-item:is(.actor,.item,.macro,.rolltable,.cards) .thumbnail {
+    clip-path: inset(12px 0 12px 0);
+    position: absolute;
+    margin-top: -11px;
+    margin-bottom: -14px;
+  }
+  :is(#actors,#actors-popout,#items,#items-popout,#macros,#macros-popout,
+      #tables,#tables-popout,#cards,#cards-popout)
+    .directory-item:is(.actor,.item,.macro,.rolltable,.cards) .entry-name {
+    position: relative;
+    padding-top: 2px;
+    padding-left: 56px;   /* laisse la place à la vignette rognée */
+    line-height: unset;
+  }
+
+  /* ===== Journal (pas de vignette) ===== */
+  :is(#journal,#journal-popout) .directory-item.journalentry {
+    position: relative;
+    line-height: 24px;
+  }
+  :is(#journal,#journal-popout) .directory-item.journalentry .entry-name {
+    position: relative;
+    padding-top: 2px;
+    padding-left: 8px;    /* pas d'image -> pas de décalage de 56px */
+    line-height: unset;
+  }
+
+  /* ===== Scènes ===== */
+  :is(#scenes,#scenes-popout) .directory-item.scene {
+    line-height: 30px;
+    height: 30px;
+    margin-bottom: 3px;
+  }
+  /* ===== Ellipsis sur les noms trop longs (TOUS les types) =====
+     min-width:0 est indispensable : sans lui, un flex-item ne rétrécit pas
+     sous la largeur de son texte et l'ellipsis ne se déclenche jamais. */
+  .sidebar-tab .directory-list .directory-item .entry-name {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* ===== Compendiums (structure différente : bannière + footer réordonnés) ===== */
+  .compendium-sidebar .compendium { height: initial; }
+  .compendium-sidebar .compendium .compendium-banner { position: absolute; }
+  .compendium-sidebar .compendium .compendium-name {
+    position: relative; order: 1; width: 100%; min-width: 0; justify-content: left;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .compendium-sidebar .compendium .status-icons {
+    position: relative; font-size: 50%; height: 100%; padding: 3px 3px 3px 0; order: 3;
+  }
+  .compendium-sidebar .compendium .compendium-footer {
+    position: relative; order: 2; bottom: unset; left: unset;
+    display: flex; gap: 3px; height: 100%; margin-right: 3px; align-self: center;
+  }
+  .compendium-sidebar .compendium .compendium-footer .source {
+    text-overflow: ellipsis; white-space: nowrap; max-width: 70px; overflow: hidden;
+  }
+
+  /* ===== En-têtes de dossiers : padding compact (tous les onglets) ===== */
+  :is(#actors,#actors-popout,#items,#items-popout,#journal,#journal-popout,
+      #macros,#macros-popout,#scenes,#scenes-popout,#tables,#tables-popout,
+      #cards,#cards-popout,#compendium,#compendium-popout)
+    li.folder > .folder-header {
+    padding: 0 6px;
+  }
+
+  /* ===== Dossiers imbriqués : en-têtes "sticky" empilés en cascade =====
+     (pas sur les compendiums, qui n'ont que le padding ci-dessus) */
+  :is(#actors,#actors-popout,#items,#items-popout,#journal,#journal-popout,
+      #macros,#macros-popout,#scenes,#scenes-popout,#tables,#tables-popout,
+      #cards,#cards-popout)
+    li.folder > .folder-header
+    + .subdirectory > .folder > .folder-header {
+    top: calc(var(--sidebar-folder-height) * 1);
+  }
+  :is(#actors,#actors-popout,#items,#items-popout,#journal,#journal-popout,
+      #macros,#macros-popout,#scenes,#scenes-popout,#tables,#tables-popout,
+      #cards,#cards-popout)
+    li.folder > .folder-header
+    + .subdirectory > .folder > .folder-header
+    + .subdirectory > .folder > .folder-header {
+    top: calc(var(--sidebar-folder-height) * 2);
+  }
+  :is(#actors,#actors-popout,#items,#items-popout,#journal,#journal-popout,
+      #macros,#macros-popout,#scenes,#scenes-popout,#tables,#tables-popout,
+      #cards,#cards-popout)
+    li.folder > .folder-header
+    + .subdirectory > .folder > .folder-header
+    + .subdirectory > .folder > .folder-header
+    + .subdirectory > .folder > .folder-header {
+    top: calc(var(--sidebar-folder-height) * 3);
+  }
+
+  /* ===== Boutons d'action de la barre latérale (partie générique, sans Plutonium) ===== */
+  .sidebar-tab .action-buttons button {
+    height: 20px;
+    line-height: 18px;
+    min-height: 0;
+  }
+  .sidebar-tab .action-buttons .create-entity,
+  .sidebar-tab .action-buttons .create-document {
+    margin-right: 0;
+  }
+
+} }

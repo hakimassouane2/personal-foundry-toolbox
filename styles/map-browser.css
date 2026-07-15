@@ -1,0 +1,237 @@
+@layer modules { @layer toolbox-map-browser {
+
+  /* ------------------------------------------------ */
+  /*  Fenêtre                                          */
+  /* ------------------------------------------------ */
+
+  #personal-toolbox-map-browser .window-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    overflow: hidden;
+  }
+
+  .ptmb-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    flex: 1;
+  }
+
+  /* ------------------------------------------------ */
+  /*  Barre de recherche                               */
+  /* ------------------------------------------------ */
+
+  .ptmb-searchbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+    border: 1px solid var(--color-border-light-tertiary, #666);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .ptmb-searchbar > i {
+    opacity: 0.6;
+    flex: 0 0 auto;
+  }
+
+  .ptmb-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    height: 34px;
+    outline: none;
+    box-shadow: none;
+  }
+
+  .ptmb-hint {
+    margin: 0;
+    font-size: var(--font-size-12, 12px);
+    opacity: 0.65;
+  }
+
+  /* ------------------------------------------------ */
+  /*  Grille de résultats                              */
+  /* ------------------------------------------------ */
+
+  .ptmb-results {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: grid;
+    /* ~3 colonnes à l'ouverture (fenêtre ~780px), davantage si on l'agrandit. */
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    /* Chaque ligne prend la hauteur de son contenu ; les cards ne sont jamais
+       étirées ni compressées, quel que soit leur nombre. */
+    grid-auto-rows: max-content;
+    align-items: start;
+    gap: 14px;
+    padding: 4px 4px 2px;
+  }
+
+  .ptmb-tile {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border-light-tertiary, #555);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.25);
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+
+  .ptmb-tile:hover {
+    border-color: var(--color-warm-2, #c9a959);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Zone média : ratio fixe → hauteur toujours proportionnelle à la largeur. */
+  .ptmb-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    flex: 0 0 auto;
+    background:
+      repeating-conic-gradient(rgba(255, 255, 255, 0.04) 0% 25%, transparent 0% 50%)
+      50% / 20px 20px;
+  }
+
+  /* Image en position absolue : hors du flux, elle ne peut plus imposer sa hauteur
+     naturelle à la média — c'est le `aspect-ratio` ci-dessus qui fixe la hauteur.
+     Les maps très verticales sont donc plafonnées (recadrées) au lieu de casser
+     la mise en page. */
+  .ptmb-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* Placeholder affiché quand la vignette n'a pas pu être chargée. */
+  .ptmb-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px;
+    text-align: center;
+    color: var(--color-text-secondary, #999);
+  }
+
+  .ptmb-placeholder > i {
+    font-size: 1.8em;
+    opacity: 0.6;
+  }
+
+  .ptmb-placeholder > span {
+    font-size: var(--font-size-12, 12px);
+  }
+
+  /* Voile sombre au survol (sous le bouton) pour faire ressortir ce dernier. */
+  .ptmb-media::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+  }
+
+  .ptmb-tile:hover .ptmb-media::before {
+    opacity: 1;
+  }
+
+  /* Bouton « Créer la scène » : pastille centrée, AU-DESSUS du voile. */
+  .ptmb-create {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 15px;
+    border-radius: 999px;
+    background: #f5f5f5;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #1a1a1a;
+    font-size: var(--font-size-13, 13px);
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.15s, transform 0.15s;
+    pointer-events: none;
+  }
+
+  .ptmb-tile:hover .ptmb-create {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Titre en légende sous l'image : toujours visible, sur une seule ligne. */
+  .ptmb-title {
+    margin: 0;
+    padding: 7px 9px;
+    font-size: var(--font-size-13, 13px);
+    line-height: 1.3;
+    color: var(--color-text-primary, #eee);
+    background: rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ------------------------------------------------ */
+  /*  Pied de page                                     */
+  /* ------------------------------------------------ */
+
+  .ptmb-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+  }
+
+  .ptmb-prev,
+  .ptmb-next {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .ptmb-status {
+    flex: 1;
+    text-align: center;
+    font-size: var(--font-size-12, 12px);
+    opacity: 0.7;
+  }
+
+  /* ------------------------------------------------ */
+  /*  Surbrillance de la zone de dépôt Scene Express   */
+  /* ------------------------------------------------ */
+
+  #scene-express-dropzone.ptmb-dropzone-active {
+    border-color: var(--color-warm-2, #c9a959) !important;
+    box-shadow: inset 0 0 12px var(--color-warm-2, #c9a959) !important;
+    color: var(--color-warm-1, #f0d98a) !important;
+  }
+
+} }

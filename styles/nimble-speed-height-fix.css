@@ -1,0 +1,3 @@
+.system-nimble .nimble-sheet--player-character:not(.minimized) .nimble-movement {
+    height: 1rem;
+}

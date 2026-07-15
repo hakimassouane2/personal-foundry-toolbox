@@ -1,0 +1,140 @@
+/* =========================================================================
+   Shared Timer — widget flottant du minuteur partagé
+   ========================================================================= */
+
+#pt-shared-timer.pt-shared-timer {
+  position: fixed;
+  top: 70px; /* juste sous la barre de navigation des scènes */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70; /* au-dessus du canvas, sous les fenêtres/dialogues */
+  width: 190px;
+  background: rgba(20, 20, 25, 0.92);
+  border: 1px solid #7a7971;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  color: #f0f0e0;
+  font-family: var(--font-primary, "Signika", sans-serif);
+  user-select: none;
+}
+
+.pt-shared-timer .pt-timer-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  cursor: move;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pt-shared-timer .pt-timer-heading {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pt-shared-timer .pt-timer-body {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pt-shared-timer .pt-timer-time {
+  font-size: 30px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pt-shared-timer .pt-timer-time.pt-expired {
+  font-size: 20px;
+  color: #ff6b6b;
+  animation: pt-timer-blink 1s steps(2, start) infinite;
+}
+
+@keyframes pt-timer-blink {
+  50% { opacity: 0.35; }
+}
+
+.pt-shared-timer .pt-timer-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.pt-shared-timer .pt-timer-bar-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #e0a44a, #e05a3a);
+  transition: width 0.5s linear;
+}
+
+/* -------------------------------------------- */
+/*  Contrôles + formulaire                       */
+/* -------------------------------------------- */
+
+.pt-shared-timer .pt-timer-controls,
+.pt-shared-timer .pt-timer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.pt-shared-timer .pt-timer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pt-shared-timer .pt-timer-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pt-shared-timer .pt-timer-minutes {
+  width: 64px;
+}
+
+.pt-shared-timer button {
+  flex: 0 0 auto;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f0f0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.pt-shared-timer button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+
+.pt-shared-timer .pt-timer-actions button,
+.pt-shared-timer .pt-timer-preset {
+  flex: 1 1 auto;
+}
+
+.pt-shared-timer input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f0f0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+}
