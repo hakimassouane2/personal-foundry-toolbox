@@ -16,11 +16,11 @@
    ------------------------------------------------------------------ */
 
 .system-nimble .nimble-sheet--player-character:not(.minimized) {
-    min-width: 800px;
-    min-height: 1000px;
+    min-width: 597px;
+    min-height: 700px;
 }
 
 .system-nimble .nimble-sheet--npc:not(.minimized) {
-    min-width: 800px;
-    min-height: 1000px;
+    min-width: 597px;
+    min-height: 700px;
 }
