@@ -20,7 +20,12 @@
  *    persiste l'état, lequel est alors rediffusé à tous.
  */
 
-const MODULE_ID = "personal-toolbox";
+/**
+ * Doit correspondre EXACTEMENT à l'`id` de module.json : le canal de socket
+ * `module.<id>` n'est relayé par le serveur que pour un module actif déclarant
+ * `"socket": true`. Un id erroné fait échouer silencieusement le relais joueur → MJ.
+ */
+const MODULE_ID = "personal-foundry-toolbox";
 
 /** Réglage de monde : l'état courant du timer (partagé par tous). */
 const STATE_SETTING = "sharedTimerState";
@@ -148,17 +153,24 @@ function resumeTimer(state) {
 }
 
 /**
- * Prolonge le timer. Si celui-ci est déjà expiré, on repart de maintenant afin que
- * les secondes ajoutées soient réellement décomptées.
+ * Ajuste le temps du timer de `seconds` secondes (positif pour prolonger, négatif
+ * pour raccourcir). Si le timer est déjà expiré, on repart de maintenant afin que
+ * les secondes ajoutées soient réellement décomptées. Tout est borné pour ne jamais
+ * descendre sous 0 (et la durée totale reste ≥ au temps restant, pour la barre).
  */
 function addTime(state, seconds) {
   if (!state.active) return;
-  const duration = state.duration + seconds;
   if (state.running) {
-    const base = Math.max(state.endTime, serverNow());
-    commit({ ...state, duration, endTime: base + seconds * 1000 });
+    const now = serverNow();
+    const base = Math.max(state.endTime, now);
+    const endTime = Math.max(now, base + seconds * 1000);
+    const remaining = (endTime - now) / 1000;
+    const duration = Math.max(1, state.duration + seconds, remaining);
+    commit({ ...state, duration, endTime });
   } else {
-    commit({ ...state, duration, remaining: Math.max(0, state.remaining) + seconds });
+    const remaining = Math.max(0, state.remaining + seconds);
+    const duration = Math.max(1, state.duration + seconds, remaining);
+    commit({ ...state, duration, remaining });
   }
 }
 
@@ -180,6 +192,9 @@ class SharedTimerWidget {
 
   /** A-t-on déjà signalé l'expiration du timer courant ? */
   #expiredNotified = false;
+
+  /** Le widget est-il replié (propre à chaque client, non persisté) ? */
+  #minimized = false;
 
   /* -------------------------------------------- */
 
@@ -214,6 +229,8 @@ class SharedTimerWidget {
     const state = getState();
     const rem = remainingSeconds(state);
 
+    this.#el.classList.toggle("pt-minimized", this.#minimized);
+
     // Un nouveau timer valide réarme la notification d'expiration.
     if (rem > 0.5) this.#expiredNotified = false;
 
@@ -241,8 +258,10 @@ class SharedTimerWidget {
     if (!state.active) return;
 
     const rem = remainingSeconds(state);
-    const timeEl = this.#el.querySelector(".pt-timer-time");
-    if (timeEl && !(state.running && rem <= 0)) timeEl.textContent = formatTime(rem);
+    if (!(state.running && rem <= 0)) {
+      const text = formatTime(rem);
+      this.#el.querySelectorAll(".pt-timer-time").forEach(el => { el.textContent = text; });
+    }
 
     const fill = this.#el.querySelector(".pt-timer-bar-fill");
     if (fill && state.duration > 0) {
@@ -273,12 +292,18 @@ class SharedTimerWidget {
   /*  Rendus                                      */
   /* -------------------------------------------- */
 
-  #headerHTML(heading) {
+  #headerHTML(heading, miniTimeHTML = "") {
     const safe = escapeHTML(heading);
+    const icon = this.#minimized ? "fa-chevron-down" : "fa-chevron-up";
+    const title = this.#minimized ? t("Expand") : t("Minimize");
     return `
       <div class="pt-timer-header" data-drag>
         <i class="fa-solid fa-hourglass-half"></i>
         <span class="pt-timer-heading" title="${safe}">${safe}</span>
+        ${miniTimeHTML}
+        <button type="button" class="pt-timer-min-btn" data-action="minimize" title="${title}">
+          <i class="fa-solid ${icon}"></i>
+        </button>
       </div>`;
   }
 
@@ -287,12 +312,11 @@ class SharedTimerWidget {
       ${this.#headerHTML(t("Heading"))}
       <div class="pt-timer-body">
         <div class="pt-timer-form">
-          <div class="pt-timer-row">
-            <input type="number" class="pt-timer-minutes" min="1" max="999" value="60">
-            <span>${t("Minutes")}</span>
+          <div class="pt-timer-row pt-timer-inputs">
+            <input type="number" class="pt-timer-minutes" min="1" max="999" value="60"
+                   title="${t("Minutes")}">
+            <span class="pt-timer-unit">${t("Minutes")}</span>
           </div>
-          <input type="text" class="pt-timer-label-input"
-                 placeholder="${t("LabelPlaceholder")}" value="${t("TorchLabel")}">
           <div class="pt-timer-row pt-timer-actions">
             <button type="button" data-action="start">
               <i class="fa-solid fa-play"></i> ${t("Start")}
@@ -315,18 +339,23 @@ class SharedTimerWidget {
       const toggle = expired ? "" : (state.running
         ? `<button type="button" data-action="pause" title="${t("Pause")}"><i class="fa-solid fa-pause"></i></button>`
         : `<button type="button" data-action="resume" title="${t("Resume")}"><i class="fa-solid fa-play"></i></button>`);
-      const add = expired ? "" : `
+      const minus = expired ? "" : `
+        <button type="button" data-action="add" data-secs="-600" title="${t("RemoveTenMinutes")}">-10</button>
+        <button type="button" data-action="add" data-secs="-60" title="${t("RemoveMinute")}">-1</button>`;
+      const plus = expired ? "" : `
         <button type="button" data-action="add" data-secs="60" title="${t("AddMinute")}">+1</button>
         <button type="button" data-action="add" data-secs="600" title="${t("AddTenMinutes")}">+10</button>`;
       controls = `
         <div class="pt-timer-controls">
-          ${toggle}${add}
+          ${minus}${toggle}${plus}
           <button type="button" data-action="stop" title="${t("Stop")}"><i class="fa-solid fa-stop"></i></button>
         </div>`;
     }
 
+    const miniTime = `<span class="pt-timer-time pt-timer-mini-time${expired ? " pt-expired" : ""}">${expired ? t("Finished") : formatTime(rem)}</span>`;
+
     return `
-      ${this.#headerHTML(heading)}
+      ${this.#headerHTML(heading, miniTime)}
       <div class="pt-timer-body">
         <div class="pt-timer-time${expired ? " pt-expired" : ""}">
           ${expired ? t("Finished") : formatTime(rem)}
@@ -342,11 +371,11 @@ class SharedTimerWidget {
 
   #startFromForm() {
     const minutesEl = this.#el.querySelector(".pt-timer-minutes");
-    const labelEl = this.#el.querySelector(".pt-timer-label-input");
     let minutes = Number.parseInt(minutesEl?.value, 10);
     if (!Number.isFinite(minutes)) minutes = 1;
     minutes = Math.max(1, Math.min(999, minutes));
-    startTimer(minutes * 60, labelEl?.value ?? "");
+    // Pas de nom saisi : le décompte retombe sur l'étiquette par défaut (« Timer »).
+    startTimer(minutes * 60, "");
   }
 
   #onClick(event) {
@@ -356,6 +385,7 @@ class SharedTimerWidget {
     console.log("Personal Toolbox | Shared Timer | action :", btn.dataset.action);
     const state = getState();
     switch (btn.dataset.action) {
+      case "minimize": this.#minimized = !this.#minimized; this.render(); break;
       case "start": this.#startFromForm(); break;
       case "preset-torch": startTimer(3600, t("TorchLabel")); break;
       case "pause": pauseTimer(state); break;
@@ -378,6 +408,8 @@ class SharedTimerWidget {
 
   #onMouseDown(event) {
     if (event.button !== 0 || !event.target.closest("[data-drag]")) return;
+    // Les boutons de l'en-tête (minimiser…) ne doivent pas amorcer un déplacement.
+    if (event.target.closest("button")) return;
     event.preventDefault();
 
     const rect = this.#el.getBoundingClientRect();

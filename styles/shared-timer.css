@@ -8,7 +8,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 70; /* au-dessus du canvas, sous les fenêtres/dialogues */
-  width: 190px;
+  width: 220px;
   background: rgba(20, 20, 25, 0.92);
   border: 1px solid #7a7971;
   border-radius: 8px;
@@ -30,9 +30,55 @@
 }
 
 .pt-shared-timer .pt-timer-heading {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Bouton « réduire / agrandir » dans l'en-tête. */
+.pt-shared-timer .pt-timer-min-btn {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 2px 5px;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.pt-shared-timer .pt-timer-min-btn:hover {
+  opacity: 1;
+}
+
+/* Heure compacte dans l'en-tête : visible uniquement quand le widget est replié. */
+.pt-shared-timer .pt-timer-mini-time {
+  display: none;
+  flex: 0 0 auto;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* L'élément porte aussi `.pt-timer-time` (30px) et, à l'expiration, `.pt-expired`
+   (20px) — tous deux déclarés PLUS BAS dans ce fichier. On scope donc à
+   `.pt-minimized` pour passer devant en spécificité, sans quoi, à spécificité
+   égale, c'est la règle la plus tardive qui l'emporterait. */
+.pt-shared-timer.pt-minimized .pt-timer-mini-time {
+  display: inline;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pt-shared-timer.pt-minimized .pt-timer-mini-time.pt-expired {
+  font-size: 18px;
+}
+
+/* Widget replié : on masque le corps, ne reste que l'en-tête compact. */
+.pt-shared-timer.pt-minimized .pt-timer-body {
+  display: none;
+}
+
+.pt-shared-timer.pt-minimized .pt-timer-header {
+  border-bottom: none;
 }
 
 .pt-shared-timer .pt-timer-body {
@@ -98,8 +144,24 @@
   gap: 6px;
 }
 
-.pt-shared-timer .pt-timer-minutes {
-  width: 64px;
+/* Ligne « durée + étiquette » du formulaire de lancement, sur une seule ligne. */
+.pt-shared-timer .pt-timer-inputs {
+  gap: 4px;
+}
+
+.pt-shared-timer .pt-timer-inputs input {
+  width: auto;
+}
+
+.pt-shared-timer .pt-timer-inputs .pt-timer-minutes {
+  flex: 0 0 auto;
+  width: 48px;
+}
+
+.pt-shared-timer .pt-timer-inputs .pt-timer-unit {
+  flex: 0 0 auto;
+  font-size: 11px;
+  opacity: 0.8;
 }
 
 .pt-shared-timer button {
