@@ -193,8 +193,8 @@ class SharedTimerWidget {
   /** A-t-on déjà signalé l'expiration du timer courant ? */
   #expiredNotified = false;
 
-  /** Le widget est-il replié (propre à chaque client, non persisté) ? */
-  #minimized = false;
+  /** Le widget est-il replié (propre à chaque client, non persisté) ? Replié par défaut. */
+  #minimized = true;
 
   /* -------------------------------------------- */
 
