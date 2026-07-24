@@ -35,6 +35,7 @@
   "PERSONAL_TOOLBOX.SharedTimer.ExpiredNotify": "Le timer « {label} » est terminé.",
   "PERSONAL_TOOLBOX.SharedTimer.PlayersControlName": "Timer partagé : contrôle par les joueurs",
   "PERSONAL_TOOLBOX.SharedTimer.PlayersControlHint": "Si activé, les joueurs peuvent créer, mettre en pause, prolonger ou arrêter le timer partagé. Sinon, seul le MJ le contrôle (les joueurs se contentent de le voir).",
+  "PERSONAL_TOOLBOX.SharedTimer.ToggleTitle": "Afficher le timer partagé",
   "TOOL_SHORTCUT.SlotHint": "Active le groupe de contrôles situé à cette position dans la liste réellement affichée à l'écran (les contrôles masqués par d'autres modules sont ignorés).",
   "TOOL_SHORTCUT.SlotName1": "Activer l'emplacement 1 (1er contrôle affiché)",
   "TOOL_SHORTCUT.SlotName2": "Activer l'emplacement 2 (2e contrôle affiché)",

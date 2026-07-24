@@ -33,6 +33,13 @@ const STATE_SETTING = "sharedTimerState";
 /** Réglage client : position à l'écran du widget (propre à chaque utilisateur). */
 const POS_SETTING = "sharedTimerPosition";
 
+/**
+ * Réglage client : l'utilisateur a-t-il masqué le widget ? Purement local et
+ * visuel, sans effet sur l'état partagé : le timer continue de tourner et son
+ * alarme d'expiration reste jouée. Chacun choisit d'afficher ou non le sien.
+ */
+const HIDDEN_SETTING = "sharedTimerHidden";
+
 /** Réglage de monde : les joueurs ont-ils le droit de contrôler le timer ? */
 const CONTROL_SETTING = "sharedTimerPlayersControl";
 
@@ -83,6 +90,21 @@ function remainingSeconds(state) {
 /** L'utilisateur courant peut-il piloter le timer ? */
 function canControl() {
   return game.user.isGM || game.settings.get(MODULE_ID, CONTROL_SETTING) === true;
+}
+
+/** L'utilisateur a-t-il masqué son widget via le bouton des outils de token ? */
+function isHidden() {
+  return game.settings.get(MODULE_ID, HIDDEN_SETTING) === true;
+}
+
+/**
+ * Affiche ou masque le widget chez l'utilisateur courant. On persiste le réglage
+ * client, dont l'`onChange` redemande le rendu : l'état du timer n'est jamais
+ * touché.
+ * @param {boolean} hidden
+ */
+function setHidden(hidden) {
+  game.settings.set(MODULE_ID, HIDDEN_SETTING, Boolean(hidden));
 }
 
 /**
@@ -229,10 +251,19 @@ class SharedTimerWidget {
     const state = getState();
     const rem = remainingSeconds(state);
 
-    this.#el.classList.toggle("pt-minimized", this.#minimized);
-
-    // Un nouveau timer valide réarme la notification d'expiration.
+    // Un nouveau timer valide réarme la notification d'expiration. Fait avant le
+    // test de masquage pour que l'alarme parte même widget caché : le timer et
+    // son décompte tournent en arrière-plan (voir #tick).
     if (rem > 0.5) this.#expiredNotified = false;
+
+    // Masquage manuel (bouton dans les outils de token) : on cache l'affichage
+    // sans toucher à l'état partagé du timer.
+    if (isHidden()) {
+      this.#el.style.display = "none";
+      return;
+    }
+
+    this.#el.classList.toggle("pt-minimized", this.#minimized);
 
     // Aucun timer : les contrôleurs voient le lanceur, les autres ne voient rien.
     if (!state.active) {
@@ -477,6 +508,14 @@ Hooks.once("init", () => {
     default: {}
   });
 
+  game.settings.register(MODULE_ID, HIDDEN_SETTING, {
+    scope: "client",
+    config: false,
+    type: Boolean,
+    default: false,
+    onChange: () => TimerWidget.render()
+  });
+
   game.settings.register(MODULE_ID, CONTROL_SETTING, {
     name: "PERSONAL_TOOLBOX.SharedTimer.PlayersControlName",
     hint: "PERSONAL_TOOLBOX.SharedTimer.PlayersControlHint",
@@ -486,6 +525,33 @@ Hooks.once("init", () => {
     default: true,
     onChange: () => TimerWidget.render()
   });
+});
+
+/**
+ * Bouton bascule dans les outils de token, pour afficher ou masquer le widget.
+ *
+ * `getSceneControlButtons` est émis à chaque (re)construction de la barre de
+ * contrôles (v13 : `controls` est un `Record<string, SceneControl>`, et
+ * `tools` un `Record<string, SceneControlTool>`). On greffe un outil de type
+ * `toggle` calqué sur `unconstrainedMovement` du cœur : actif = widget visible.
+ *
+ * Volontairement visible par tous et non réservé au MJ : tout le monde voit le
+ * timer, donc chacun peut vouloir le masquer chez soi. Le masquage est un
+ * réglage client, aucun impact sur l'état partagé.
+ */
+Hooks.on("getSceneControlButtons", (controls) => {
+  const tokenControl = controls.tokens;
+  if (!tokenControl?.tools) return;
+
+  tokenControl.tools.sharedTimer = {
+    name: "sharedTimer",
+    order: 5,
+    title: "PERSONAL_TOOLBOX.SharedTimer.ToggleTitle",
+    icon: "fa-solid fa-hourglass-half",
+    toggle: true,
+    active: !isHidden(),
+    onChange: (event, active) => setHidden(!active)
+  };
 });
 
 Hooks.once("ready", () => {

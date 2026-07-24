@@ -35,6 +35,7 @@
   "PERSONAL_TOOLBOX.SharedTimer.ExpiredNotify": "Timer “{label}” has finished.",
   "PERSONAL_TOOLBOX.SharedTimer.PlayersControlName": "Shared Timer: player control",
   "PERSONAL_TOOLBOX.SharedTimer.PlayersControlHint": "If enabled, players can create, pause, extend or stop the shared timer. Otherwise only the GM controls it (players just see it).",
+  "PERSONAL_TOOLBOX.SharedTimer.ToggleTitle": "Show the shared timer",
   "TOOL_SHORTCUT.SlotHint": "Activates the control group at this position in the list actually displayed on screen (controls hidden by other modules are ignored).",
   "TOOL_SHORTCUT.SlotName1": "Activate slot 1 (1st displayed control)",
   "TOOL_SHORTCUT.SlotName2": "Activate slot 2 (2nd displayed control)",
