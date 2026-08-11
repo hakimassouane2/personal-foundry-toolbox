@@ -1,0 +1,81 @@
+/* =========================================================================
+   Toolbox — Habillage des jets relancés (Foundry v13)
+   -------------------------------------------------------------------------
+   Deux états, posés par `scripts/reroll.mjs` :
+
+     .pft-reroll-superseded → le jet d'origine, remplacé par une relance. Il
+       reste lisible mais s'efface visuellement, et son total est barré pour
+       qu'on ne le confonde pas avec le résultat qui compte. Au survol, il
+       reprend sa pleine opacité : on doit pouvoir relire un ancien jet.
+
+     .pft-reroll-result → la relance elle-même, signalée par un badge.
+
+   Le badge s'ancre DANS la carte du système (voir BADGE_ANCHORS côté script),
+   avec deux variantes de mise en page :
+
+     --inline → parent en flex (chez Nimble : la ligne « image + titre »,
+       chez les autres systèmes : l'en-tête du core). Le badge se pousse à
+       droite et s'aligne sur la ligne du titre.
+
+     --banner → parent = la grille d'en-tête colorée de Nimble, qui déclare
+       exactement trois colonnes. On lui en ajoute une pour accueillir le
+       badge, placé en tête.
+
+   Le `@layer modules { … }` suffit à passer devant le core sans `!important` :
+   Foundry déclare le layer `modules` après ses propres layers.
+   ========================================================================= */
+
+@layer modules { @layer toolbox-reroll {
+
+  .chat-message.pft-reroll-superseded {
+    opacity: 0.5;
+    transition: opacity 150ms ease;
+  }
+
+  .chat-message.pft-reroll-superseded:hover {
+    opacity: 1;
+  }
+
+  /* Totaux : sélecteurs du core, plus ceux des cartes Nimble. */
+  .chat-message.pft-reroll-superseded .dice-total,
+  .chat-message.pft-reroll-superseded .nimble-group-total__value,
+  .chat-message.pft-reroll-superseded .nimble-hidden-roll__result {
+    text-decoration: line-through;
+  }
+
+  .pft-reroll-badge {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.05rem 0.35rem;
+    border: 1px solid currentcolor;
+    border-radius: 3px;
+    font-size: var(--font-size-10, 0.625rem);
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    opacity: 0.85;
+  }
+
+  /* Ligne du titre : le badge se cale à droite, sans écraser le titre. */
+  .pft-reroll-badge--inline {
+    margin-inline-start: auto;
+  }
+
+  /* En-tête coloré de Nimble : une colonne de plus pour le badge en tête. */
+  .nimble-chat-card__header:has(> .pft-reroll-badge) {
+    grid-template-columns: max-content 1fr max-content max-content;
+  }
+
+  .pft-reroll-badge--result {
+    color: var(--color-level-success, rgb(90 170 90));
+  }
+
+  .pft-reroll-badge--superseded {
+    opacity: 0.7;
+  }
+
+} }

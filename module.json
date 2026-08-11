@@ -21,7 +21,8 @@
     "scripts/default-deletion-dialog-to-yes.mjs",
     "scripts/map-browser.mjs",
     "scripts/hide-npc-names-nimble.mjs",
-    "scripts/shared-timer.mjs"
+    "scripts/shared-timer.mjs",
+    "scripts/reroll.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
@@ -30,7 +31,8 @@
     "styles/nimble-sheet-size.css",
     "styles/nimble-speed-height-fix.css",
     "styles/shared-timer.css",
-    "styles/chat-solid-background.css"
+    "styles/chat-solid-background.css",
+    "styles/reroll.css"
   ],
   "relationships": {
     "recommends": [
