@@ -22,6 +22,7 @@
     "scripts/map-browser.mjs",
     "scripts/hide-npc-names-nimble.mjs",
     "scripts/shared-timer.mjs",
+    "scripts/nimble-calc.mjs",
     "scripts/reroll.mjs"
   ],
   "styles": [
@@ -32,7 +33,8 @@
     "styles/nimble-speed-height-fix.css",
     "styles/shared-timer.css",
     "styles/chat-solid-background.css",
-    "styles/reroll.css"
+    "styles/reroll.css",
+    "styles/nimble-calc.css"
   ],
   "relationships": {
     "recommends": [

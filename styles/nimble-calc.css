@@ -1,0 +1,106 @@
+/* =========================================================================
+   Nimble Calc — calculateur de rencontres PF2e -> Nimble
+   ========================================================================= */
+
+.pt-nimble-calc {
+  padding: 10px 12px;
+  font-size: var(--font-size-13, 13px);
+}
+
+.pt-nimble-calc__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pt-nimble-calc__modes {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.pt-nimble-calc__modes label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Réservé au mode « boss + sbires » : masqué le reste du temps. */
+.pt-nimble-calc__boss-row {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pt-nimble-calc__boss-row--visible {
+  display: flex;
+}
+
+.pt-nimble-calc__boss-row label {
+  white-space: nowrap;
+}
+
+.pt-nimble-calc__boss-row input[type="range"] {
+  flex: 1;
+}
+
+.pt-nimble-calc__boss-share {
+  min-width: 36px;
+  font-weight: 600;
+}
+
+.pt-nimble-calc__summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.pt-nimble-calc__stat {
+  padding: 6px 4px;
+  border: 1px solid var(--color-border-light-2, #7a7971);
+  border-radius: 5px;
+}
+
+.pt-nimble-calc__stat-label {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.pt-nimble-calc__stat-value {
+  font-weight: 700;
+}
+
+.pt-nimble-calc__compo {
+  margin: 0 0 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-light-2, #7a7971);
+  border-radius: 5px;
+}
+
+.pt-nimble-calc__compo legend {
+  padding: 0 4px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.pt-nimble-calc__compo > div {
+  line-height: 1.5;
+}
+
+/* Rappel discret du total placé face au budget visé. */
+.pt-nimble-calc__total {
+  opacity: 0.6;
+}
+
+.pt-nimble-calc__warning {
+  margin-top: 4px;
+  padding: 4px 8px;
+  border: 1px solid #b8860b;
+  border-radius: 5px;
+  font-size: 12px;
+}
