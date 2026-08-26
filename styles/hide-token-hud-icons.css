@@ -1,0 +1,30 @@
+/* =========================================================================
+   Toolbox : masque les boutons inutiles du HUD de token
+   -------------------------------------------------------------------------
+   Le HUD (clic droit sur un token) accumule les boutons de Foundry, du système
+   et des modules. On cache ici ceux dont on ne se sert jamais : commente une
+   règle pour récupérer le bouton correspondant.
+
+   Les boutons se distinguent par leur data-action ; ceux des modules qui n'en
+   posent pas se repèrent par une autre marque (data-tooltip-class, classe).
+   ========================================================================= */
+
+/* Foundry : sélecteur de type de déplacement (icône bonhomme qui marche). */
+#token-hud button[data-action="togglePalette"][data-palette="movementActions"],
+
+/* Foundry : cibler le token (cible/bullseye). */
+#token-hud button[data-action="target"],
+
+/* Foundry : passer au premier plan / à l'arrière-plan (flèches haut et bas). */
+#token-hud button[data-action="sort"],
+
+/* Foundry : ouvrir la configuration du token (engrenage). */
+#token-hud button[data-action="config"],
+
+/* Hide NPC Names : révéler ou masquer le nom de l'acteur (masque). */
+#token-hud button[data-action="toggleActorHidden"],
+
+/* Share Media : partager le média du token (flèche de partage). */
+#token-hud button[data-tooltip-class="shm"] {
+  display: none;
+}

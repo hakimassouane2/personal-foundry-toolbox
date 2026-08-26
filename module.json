@@ -37,7 +37,8 @@
     "styles/chat-solid-background.css",
     "styles/reroll.css",
     "styles/nimble-calc.css",
-    "styles/torch-button.css"
+    "styles/torch-button.css",
+    "styles/hide-token-hud-icons.css"
   ],
   "relationships": {
     "recommends": [
