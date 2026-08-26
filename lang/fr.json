@@ -116,5 +116,9 @@
   "PERSONAL_TOOLBOX.NoTokenAnimation.Name": "Désactiver les animations de déplacement des tokens",
   "PERSONAL_TOOLBOX.NoTokenAnimation.Hint": "Les tokens sautent directement à destination au lieu de glisser. Réglage local à ce navigateur : il ne change rien pour les autres joueurs.",
   "PERSONAL_TOOLBOX.NoteIconBackground.Name": "Masquer le fond sombre des notes de carte",
-  "PERSONAL_TOOLBOX.NoteIconBackground.Hint": "Les marqueurs de note s'affichent sans leur carré arrondi sombre. Le marqueur, sa bordure de survol et sa zone cliquable ne changent pas."
+  "PERSONAL_TOOLBOX.NoteIconBackground.Hint": "Les marqueurs de note s'affichent sans leur carré arrondi sombre. Le marqueur, sa bordure de survol et sa zone cliquable ne changent pas.",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.Name": "Échap ne ferme que la fenêtre active",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.Hint": "Échap ferme la fenêtre du dessus au lieu de toutes les fenêtres ouvertes d'un coup. Appuyez à nouveau pour fermer la suivante. Le reste des usages d'Échap (annuler un déplacement, fermer un menu contextuel, désélectionner les tokens, ouvrir le menu principal) ne change pas.",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.Keybinding": "Fermer la fenêtre active",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.KeybindingHint": "N'agit que si le réglage du même nom est activé. Sinon, le comportement par défaut de Foundry s'applique."
 }

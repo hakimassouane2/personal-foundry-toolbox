@@ -116,5 +116,9 @@
   "PERSONAL_TOOLBOX.NoTokenAnimation.Name": "Disable token movement animations",
   "PERSONAL_TOOLBOX.NoTokenAnimation.Hint": "Tokens jump straight to their destination instead of sliding. Client-side only: it changes nothing for the other players.",
   "PERSONAL_TOOLBOX.NoteIconBackground.Name": "Hide the dark backdrop behind map notes",
-  "PERSONAL_TOOLBOX.NoteIconBackground.Hint": "Map note markers are drawn without their dark rounded square. The marker, its hover border and its click area are unchanged."
+  "PERSONAL_TOOLBOX.NoteIconBackground.Hint": "Map note markers are drawn without their dark rounded square. The marker, its hover border and its click area are unchanged.",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.Name": "Escape closes only the active window",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.Hint": "Escape closes the front-most window instead of every open window at once. Press it again to close the next one. Everything else Escape does (cancel a drag, close a context menu, deselect tokens, open the main menu) is unchanged.",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.Keybinding": "Close the active window",
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.KeybindingHint": "Only acts while the setting of the same name is enabled. Otherwise Foundry's default behaviour applies."
 }

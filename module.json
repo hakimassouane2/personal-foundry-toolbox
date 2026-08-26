@@ -28,7 +28,8 @@
     "scripts/torch-button.mjs",
     "scripts/elevation-stepper.mjs",
     "scripts/no-token-animation.mjs",
-    "scripts/note-icon-background.mjs"
+    "scripts/note-icon-background.mjs",
+    "scripts/escape-active-window.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
