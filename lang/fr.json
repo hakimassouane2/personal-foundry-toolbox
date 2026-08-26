@@ -114,5 +114,7 @@
   "TOOL_SHORTCUT.SlotName8": "Activer l'emplacement 8 (8e contrôle affiché)",
   "TOOL_SHORTCUT.SlotName9": "Activer l'emplacement 9 (9e contrôle affiché)",
   "PERSONAL_TOOLBOX.NoTokenAnimation.Name": "Désactiver les animations de déplacement des tokens",
-  "PERSONAL_TOOLBOX.NoTokenAnimation.Hint": "Les tokens sautent directement à destination au lieu de glisser. Réglage local à ce navigateur : il ne change rien pour les autres joueurs."
+  "PERSONAL_TOOLBOX.NoTokenAnimation.Hint": "Les tokens sautent directement à destination au lieu de glisser. Réglage local à ce navigateur : il ne change rien pour les autres joueurs.",
+  "PERSONAL_TOOLBOX.NoteIconBackground.Name": "Masquer le fond sombre des notes de carte",
+  "PERSONAL_TOOLBOX.NoteIconBackground.Hint": "Les marqueurs de note s'affichent sans leur carré arrondi sombre. Le marqueur, sa bordure de survol et sa zone cliquable ne changent pas."
 }

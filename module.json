@@ -27,7 +27,8 @@
     "scripts/drop-actor-folder.mjs",
     "scripts/torch-button.mjs",
     "scripts/elevation-stepper.mjs",
-    "scripts/no-token-animation.mjs"
+    "scripts/no-token-animation.mjs",
+    "scripts/note-icon-background.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",

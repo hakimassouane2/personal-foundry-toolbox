@@ -114,5 +114,7 @@
   "TOOL_SHORTCUT.SlotName8": "Activate slot 8 (8th displayed control)",
   "TOOL_SHORTCUT.SlotName9": "Activate slot 9 (9th displayed control)",
   "PERSONAL_TOOLBOX.NoTokenAnimation.Name": "Disable token movement animations",
-  "PERSONAL_TOOLBOX.NoTokenAnimation.Hint": "Tokens jump straight to their destination instead of sliding. Client-side only: it changes nothing for the other players."
+  "PERSONAL_TOOLBOX.NoTokenAnimation.Hint": "Tokens jump straight to their destination instead of sliding. Client-side only: it changes nothing for the other players.",
+  "PERSONAL_TOOLBOX.NoteIconBackground.Name": "Hide the dark backdrop behind map notes",
+  "PERSONAL_TOOLBOX.NoteIconBackground.Hint": "Map note markers are drawn without their dark rounded square. The marker, its hover border and its click area are unchanged."
 }
