@@ -24,7 +24,8 @@
     "scripts/shared-timer.mjs",
     "scripts/nimble-calc.mjs",
     "scripts/reroll.mjs",
-    "scripts/drop-actor-folder.mjs"
+    "scripts/drop-actor-folder.mjs",
+    "scripts/torch-button.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
@@ -35,7 +36,8 @@
     "styles/shared-timer.css",
     "styles/chat-solid-background.css",
     "styles/reroll.css",
-    "styles/nimble-calc.css"
+    "styles/nimble-calc.css",
+    "styles/torch-button.css"
   ],
   "relationships": {
     "recommends": [
