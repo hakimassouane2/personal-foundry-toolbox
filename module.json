@@ -26,7 +26,8 @@
     "scripts/reroll.mjs",
     "scripts/drop-actor-folder.mjs",
     "scripts/torch-button.mjs",
-    "scripts/elevation-stepper.mjs"
+    "scripts/elevation-stepper.mjs",
+    "scripts/no-token-animation.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
