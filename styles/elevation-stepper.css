@@ -1,0 +1,23 @@
+/* =========================================================================
+   Toolbox : élévation pilotée uniquement par deux boutons
+   -------------------------------------------------------------------------
+   Foundry laisse la colonne gauche du HUD à 50 px de large alors que la
+   colonne droite se cale sur la taille d'un bouton (35 px). D'où deux colonnes
+   décalées. On aligne les deux, et on retire le champ de saisie de l'élévation
+   devenu inutile : les boutons du stepper le remplacent.
+   ========================================================================= */
+
+#token-hud .col.left {
+  --column-width: var(--control-size);
+}
+
+/* Le champ de saisie et son chevron décoratif disparaissent ensemble.
+   Commente cette règle pour récupérer la saisie directe de l'élévation. */
+#token-hud .attribute.elevation {
+  display: none;
+}
+
+/* Flèches un peu plus discrètes que les icônes pleines des autres boutons. */
+#token-hud .pft-elevation-step i {
+  font-size: var(--font-size-18, 18px);
+}

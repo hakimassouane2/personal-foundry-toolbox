@@ -25,7 +25,8 @@
     "scripts/nimble-calc.mjs",
     "scripts/reroll.mjs",
     "scripts/drop-actor-folder.mjs",
-    "scripts/torch-button.mjs"
+    "scripts/torch-button.mjs",
+    "scripts/elevation-stepper.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
@@ -38,7 +39,8 @@
     "styles/reroll.css",
     "styles/nimble-calc.css",
     "styles/torch-button.css",
-    "styles/hide-token-hud-icons.css"
+    "styles/hide-token-hud-icons.css",
+    "styles/elevation-stepper.css"
   ],
   "relationships": {
     "recommends": [
