@@ -23,7 +23,8 @@
     "scripts/hide-npc-names-nimble.mjs",
     "scripts/shared-timer.mjs",
     "scripts/nimble-calc.mjs",
-    "scripts/reroll.mjs"
+    "scripts/reroll.mjs",
+    "scripts/drop-actor-folder.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
