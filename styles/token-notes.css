@@ -1,0 +1,200 @@
+/* =========================================================================
+   Toolbox : notes de MJ sur les tokens (Foundry v13)
+   -------------------------------------------------------------------------
+   Habillage du panneau posé par `scripts/token-notes.mjs`. Le panneau est un
+   enfant direct de <body>, positionné en pixels écran juste au-dessus du
+   token survolé.
+
+   Deux états, portés par la racine :
+
+     .pft-note              -> lecture, le panneau suit le survol
+     .pft-note.is-editing   -> saisie, le panneau est épinglé
+
+   Il vit au niveau des infobulles : ancré au canvas, il doit rester lisible
+   même si une fenêtre traîne au-dessus du token. Comme un clic à l'extérieur
+   le referme, il ne bloque jamais l'interface.
+
+   Le panneau n'a volontairement ni titre, ni bouton de fermeture, ni ligne
+   d'aide : tout l'espace va au texte de la note.
+   ========================================================================= */
+
+@layer modules { @layer toolbox-token-notes {
+
+  .pft-note {
+    position: fixed;
+    z-index: var(--z-index-tooltip, 9999);
+    box-sizing: border-box;
+    width: max-content;
+    min-width: 180px;
+    max-width: 320px;
+    max-height: 45vh;
+    overflow-y: auto;
+    padding: 0.4rem 0.55rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    border: 1px solid var(--color-border-highlight, #ff6400);
+    border-radius: 5px;
+    background: rgba(15, 15, 18, 0.94);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.65);
+
+    color: var(--color-text-primary, #eee);
+    font-family: var(--font-primary, "Signika", sans-serif);
+    font-size: var(--font-size-13, 13px);
+    line-height: 1.35;
+    text-align: left;
+
+    /* Le panneau est inséré avant d'être positionné : on ne le montre qu'une
+       fois placé, sinon il clignote en haut à gauche de l'écran. */
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+
+  .pft-note.is-open {
+    opacity: 1;
+  }
+
+  /* ---- Blocs de note ---------------------------------------------------- */
+
+  /* Le bloc « Fiche » et le bloc « Ce token » se suivent : un filet les sépare
+     pour qu'on voie d'un oeil ce qui vaut pour l'exemplaire posé. */
+  .pft-note__section + .pft-note__section {
+    padding-top: 0.3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .pft-note__label {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: var(--color-text-subtle, #999);
+    font-size: var(--font-size-10, 10px);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .pft-note__body p {
+    margin: 0 0 0.35rem;
+  }
+
+  .pft-note__body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Foundry remet les listes à plat un peu partout : on redéclare tout. */
+  .pft-note__list {
+    margin: 0 0 0.35rem;
+    padding-left: 1.1em;
+    list-style: disc outside;
+  }
+
+  .pft-note__list:last-child {
+    margin-bottom: 0;
+  }
+
+  .pft-note__list li {
+    margin: 0.05rem 0;
+    padding: 0;
+    list-style: inherit;
+  }
+
+  .pft-note__body--empty {
+    color: var(--color-text-subtle, #999);
+    font-style: italic;
+  }
+
+  .pft-note__body .content-link {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* ---- Cases à cocher --------------------------------------------------- */
+
+  .pft-note__check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+    margin: 0.1rem 0;
+    cursor: pointer;
+  }
+
+  /* La case est centrée dans une boîte qui fait exactement une hauteur de
+     ligne. Elle s'aligne donc sur la première ligne du libellé quelle que soit
+     la hauteur que Foundry impose à l'input, et un libellé qui passe à la
+     ligne ne fait pas glisser la case vers le bas. Caler une marge à la main
+     ne marchait pas : la hauteur réelle de l'input n'est pas celle qu'on lui
+     demande. */
+  .pft-note__check-box {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    height: 1.35em; /* repli : line-height du panneau */
+    height: 1lh;
+  }
+
+  .pft-note__check-box input[type="checkbox"] {
+    box-sizing: border-box;
+    width: 1em;
+    height: 1em;
+    min-height: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  /* Réglage mesuré à l'oeil dans Foundry : malgré la boîte ci-dessus, le
+     libellé tombe encore un poil trop haut par rapport à la case. On redescend
+     le texte plutôt que de remonter la case, pour ne dépendre d'aucune des
+     dimensions que le core impose à l'input. Effet de bord assumé : le label
+     gagne 0.3em de hauteur, donc les cases d'une liste sont un peu plus
+     espacées. Le padding-left s'ajoute au « gap » du label, c'est le seul
+     endroit à toucher pour resserrer le texte contre sa case. */
+  .pft-note__check-text {
+    flex: 1 1 auto;
+    padding-top: 0.3em;
+    padding-left: 0.3em;
+  }
+
+  /* Une ligne cochée reste lisible mais s'efface : c'est de l'historique. */
+  .pft-note__check.is-done .pft-note__check-text {
+    opacity: 0.5;
+    text-decoration: line-through;
+  }
+
+  /* ---- Saisie ----------------------------------------------------------- */
+
+  .pft-note.is-editing {
+    border-color: var(--color-warm-2, #ff9f43);
+  }
+
+  .pft-note__input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 1.6rem;
+    padding: 0.25rem 0.35rem;
+    resize: none;
+
+    /* Le champ suit son contenu (voir autosize()), il n'a donc jamais besoin
+       de sa propre barre de défilement : c'est le panneau qui défile, une fois
+       passé son max-height. Deux barres imbriquées seraient illisibles. */
+    overflow: hidden;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.4);
+
+    color: var(--color-text-primary, #eee);
+    font-family: var(--font-primary, "Signika", sans-serif);
+    font-size: var(--font-size-13, 13px);
+    line-height: 1.35;
+  }
+
+  .pft-note__input:focus {
+    border-color: var(--color-border-highlight, #ff6400);
+    box-shadow: none;
+    outline: none;
+  }
+
+}}

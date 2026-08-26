@@ -120,5 +120,16 @@
   "PERSONAL_TOOLBOX.EscapeActiveWindow.Name": "Escape closes only the active window",
   "PERSONAL_TOOLBOX.EscapeActiveWindow.Hint": "Escape closes the front-most window instead of every open window at once. Press it again to close the next one. Everything else Escape does (cancel a drag, close a context menu, deselect tokens, open the main menu) is unchanged.",
   "PERSONAL_TOOLBOX.EscapeActiveWindow.Keybinding": "Close the active window",
-  "PERSONAL_TOOLBOX.EscapeActiveWindow.KeybindingHint": "Only acts while the setting of the same name is enabled. Otherwise Foundry's default behaviour applies."
+  "PERSONAL_TOOLBOX.EscapeActiveWindow.KeybindingHint": "Only acts while the setting of the same name is enabled. Otherwise Foundry's default behaviour applies.",
+  "PERSONAL_TOOLBOX.TokenNotes.DelayName": "Token notes: hover delay",
+  "PERSONAL_TOOLBOX.TokenNotes.DelayHint": "How long a token must be hovered before its note appears, in milliseconds. Zero shows it instantly, at the cost of a panel flickering whenever the cursor crosses the canvas.",
+  "PERSONAL_TOOLBOX.TokenNotes.PromptEmptyName": "Token notes: offer to write on tokens without a note",
+  "PERSONAL_TOOLBOX.TokenNotes.PromptEmptyHint": "Hovering a token that has no note still opens the panel, with a prompt to click. Disable to only show the panel on tokens that already have a note: the canvas is quieter, but there is no longer a way to write a first note from hover.",
+  "PERSONAL_TOOLBOX.TokenNotes.Scope.actor": "Sheet",
+  "PERSONAL_TOOLBOX.TokenNotes.Scope.token": "This token",
+  "PERSONAL_TOOLBOX.TokenNotes.Placeholder.actor": "Applies to every token of this sheet",
+  "PERSONAL_TOOLBOX.TokenNotes.Placeholder.token": "Applies to this placed token only",
+  "PERSONAL_TOOLBOX.TokenNotes.Empty": "Click to add a note",
+  "PERSONAL_TOOLBOX.TokenNotes.SaveFailed": "Could not save the note.",
+  "PERSONAL_TOOLBOX.TokenNotes.DropFailed": "Could not create a link to that document."
 }

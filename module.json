@@ -29,7 +29,8 @@
     "scripts/elevation-stepper.mjs",
     "scripts/no-token-animation.mjs",
     "scripts/note-icon-background.mjs",
-    "scripts/escape-active-window.mjs"
+    "scripts/escape-active-window.mjs",
+    "scripts/token-notes.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
@@ -43,7 +44,8 @@
     "styles/nimble-calc.css",
     "styles/torch-button.css",
     "styles/hide-token-hud-icons.css",
-    "styles/elevation-stepper.css"
+    "styles/elevation-stepper.css",
+    "styles/token-notes.css"
   ],
   "relationships": {
     "recommends": [
