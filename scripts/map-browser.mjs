@@ -377,7 +377,12 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
     const curr = page * PAGE_SIZE;
 
     const reqId = ++this.#reqId;
-    this.#showStatus("Searching");
+    // Tant qu'il y a déjà des résultats à l'écran, on laisse les numéros en place,
+    // simplement inertes : les masquer ferait clignoter le pied de page à chaque
+    // frappe. Le message d'attente n'apparaît donc qu'à grille vide.
+    const pages = this.element.querySelector(".ptmb-pages");
+    if (grid.childElementCount) pages.classList.add("busy");
+    else this.#showStatus("Searching");
     prev.disabled = true;
     next.disabled = true;
 
@@ -442,7 +447,10 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
   #showStatus(key) {
     const status = this.element.querySelector(".ptmb-status");
     const pages = this.element.querySelector(".ptmb-pages");
-    if (pages) pages.hidden = true;
+    if (pages) {
+      pages.hidden = true;
+      pages.classList.remove("busy");
+    }
     if (!status) return;
     status.hidden = false;
     status.textContent = localize(key);
@@ -484,6 +492,7 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
     if (!nav) return;
     if (status) status.hidden = true;
     nav.hidden = false;
+    nav.classList.remove("busy");
 
     const fragment = document.createDocumentFragment();
     for (const item of pageItems(this.#page, this.#lastPage)) {

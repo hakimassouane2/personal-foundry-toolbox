@@ -253,6 +253,12 @@
     color: var(--color-warm-1, #f0d98a);
   }
 
+  /* Recherche en cours : les numéros restent en place mais deviennent inertes. */
+  .ptmb-pages.busy {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
   .ptmb-gap {
     flex: 0 0 auto;
     padding: 0 2px;
