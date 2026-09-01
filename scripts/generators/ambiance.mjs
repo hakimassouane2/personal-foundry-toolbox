@@ -32,22 +32,22 @@ const localize = (key, data) =>
  * en entier là où les trois sens tiennent en propositions courtes.
  */
 const SECTIONS = [
-  { id: "sight", columns: [{ key: "sight", count: 4 }] },
-  { id: "sound", columns: [{ key: "sound", count: 4 }] },
-  { id: "smell", columns: [{ key: "smell", count: 4 }] },
-  { id: "details", wide: true, columns: [{ key: "detail", count: 3 }] }
+  { id: "sight", layout: "pairs", columns: [{ key: "sight", count: 4 }] },
+  { id: "sound", layout: "pairs", columns: [{ key: "sound", count: 4 }] },
+  { id: "smell", layout: "pairs", columns: [{ key: "smell", count: 4 }] },
+  { id: "details", layout: "wide", columns: [{ key: "detail", count: 3 }] }
 ];
 
 /**
  * Tire le contenu d'une section pour un lieu donné.
  * @param {typeof SECTIONS[number]} section
  * @param {typeof PLACES[number]} place
- * @returns {{id: string, wide: boolean, columns: Array<{key: string, names: string[]}>}}
+ * @returns {{id: string, layout: string, columns: Array<{key: string, names: string[]}>}}
  */
 function fillSection(section, place) {
   return {
     id: section.id,
-    wide: Boolean(section.wide),
+    layout: section.layout,
     columns: section.columns.map((column) => ({
       key: column.key,
       names: pickMany(place[column.key], column.count)
@@ -165,7 +165,7 @@ class AmbiancePanel {
       title: localize(`Section.${section.id}`),
       rerollTooltip: localize("RerollSection"),
       itemTooltip: localize("CopyHint"),
-      wide: section.wide,
+      layout: section.layout,
       // Aucune colonne n'est intitulée : le titre de section porte déjà le nom
       // du sens, et chaque section n'en compte qu'une.
       columns: section.columns.map((column) => ({ names: column.names }))

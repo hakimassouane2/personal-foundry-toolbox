@@ -306,21 +306,35 @@
     opacity: 0.85;
   }
 
-  /* Une grille qui se remplit en colonnes : dix noms tiennent alors dans un
-     coup d'œil, ce qui est tout l'intérêt d'un générateur de noms. */
+  /* Trois dispositions selon la longueur des propositions. Par défaut, des
+     colonnes étroites : dix noms tiennent alors dans un coup d'œil, ce qui est
+     tout l'intérêt d'un générateur de noms. L'écart vertical doit rester
+     supérieur à l'interligne, sans quoi deux entrées repliées sur deux lignes
+     se touchent et on ne sait plus où l'une finit. */
   .ptg-names {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-    gap: 2px 10px;
+    gap: 5px 12px;
   }
 
-  /* Les entrées longues prennent la ligne entière : serrées dans une grille
-     étroite, elles se replieraient sur trois lignes. */
+  /* Des groupes nominaux qui tiennent tout juste sur une ligne : deux colonnes
+     à la largeur par défaut de la fenêtre, et quatre entrées font un carré
+     plutôt qu'une rangée de trois plus une esseulée. */
+  .ptg-names.pairs {
+    grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  }
+
+  /* Les entrées les plus longues prennent la ligne entière : serrées dans une
+     grille, elles se replieraient sur trois lignes. */
   .ptg-names.wide {
     grid-template-columns: 1fr;
   }
 
   .ptg-names .ptg-keyword {
+    /* Les boutons de Foundry sont des conteneurs flex centrés, ce qui ignore
+       `text-align`. On repasse en bloc pour que le texte s'aligne à gauche et
+       se replie normalement. */
+    display: block;
     width: auto;
     margin: 0;
     padding: 3px 6px;

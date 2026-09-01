@@ -25,21 +25,22 @@ export const esc = (str) => String(str).replace(/[&<>"]/g, (c) =>
 /**
  * Rend une section : un titre relançable, puis ses colonnes de propositions.
  *
- * `wide` réserve une ligne entière à chaque proposition. C'est ce qu'il faut
- * dès que les entrées sont des groupes de mots plutôt que des mots : serrées
- * dans une grille étroite, elles se replient sur trois lignes et deviennent
- * illisibles.
+ * `layout` règle la largeur des propositions, qui dépend de leur longueur :
+ *   - `grid`  : colonnes étroites, pour des entrées de deux ou trois mots ;
+ *   - `pairs` : colonnes larges, pour des groupes nominaux qui tiennent tout
+ *               juste sur une ligne ;
+ *   - `wide`  : une proposition par ligne, pour les entrées les plus longues.
  *
- * @param {object}           section
- * @param {string}           section.id
- * @param {string}           section.title
- * @param {string}           section.rerollTooltip
- * @param {string}           section.itemTooltip
- * @param {KeywordColumn[]}  section.columns
- * @param {boolean}          [section.wide=false]
+ * @param {object}                    section
+ * @param {string}                    section.id
+ * @param {string}                    section.title
+ * @param {string}                    section.rerollTooltip
+ * @param {string}                    section.itemTooltip
+ * @param {KeywordColumn[]}           section.columns
+ * @param {"grid"|"pairs"|"wide"}     [section.layout="grid"]
  * @returns {string}
  */
-export function renderKeywordSection({ id, title, rerollTooltip, itemTooltip, columns, wide = false }) {
+export function renderKeywordSection({ id, title, rerollTooltip, itemTooltip, columns, layout = "grid" }) {
   const body = columns.map((column) => {
     const heading = column.label
       ? `<h4 class="ptg-column-title">${esc(column.label)}</h4>`
@@ -49,7 +50,8 @@ export function renderKeywordSection({ id, title, rerollTooltip, itemTooltip, co
       <button type="button" class="ptg-keyword" data-name="${esc(name)}"
               data-tooltip="${esc(itemTooltip)}">${esc(name)}</button>`).join("");
 
-    return `<div class="ptg-column">${heading}<div class="ptg-names${wide ? " wide" : ""}">${items}</div></div>`;
+    const modifier = layout === "grid" ? "" : ` ${layout}`;
+    return `<div class="ptg-column">${heading}<div class="ptg-names${modifier}">${items}</div></div>`;
   }).join("");
 
   return `

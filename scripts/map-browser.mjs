@@ -36,6 +36,25 @@ const NEWEST_QUERY = ":newest:";
 /** Nombre de résultats par page renvoyés par l'API (offset `curr` par pas de 30). */
 const PAGE_SIZE = 30;
 
+/**
+ * Plafond dur de pagination. L'API classe *tout* son corpus (~27 500 maps) par
+ * similarité et n'expose ni total ni nombre de pages : sa « dernière page » est
+ * la même (~920) pour n'importe quelle recherche, et ne veut donc rien dire.
+ * On s'arrête bien avant, là où les résultats ont encore un rapport avec la requête.
+ */
+const MAX_PAGES = 30;
+
+/**
+ * Seuil de pertinence, exprimé en fraction du meilleur score de la première page.
+ * On pagine tant que le dernier résultat d'une page reste au-dessus ; en dessous,
+ * on cesse de proposer la suite. Un ratio plutôt qu'un seuil absolu, parce que
+ * l'échelle des scores varie d'une requête à l'autre.
+ */
+const RELEVANCE_RATIO = 0.65;
+
+/** Nombre de numéros de page affichés de part et d'autre de la page courante. */
+const PAGE_WINDOW = 2;
+
 /* -------------------------------------------- */
 /*  Helpers                                     */
 /* -------------------------------------------- */
@@ -43,6 +62,46 @@ const PAGE_SIZE = 30;
 const localize = (key, data) =>
   data ? game.i18n.format(`PERSONAL_TOOLBOX.MapBrowser.${key}`, data)
        : game.i18n.localize(`PERSONAL_TOOLBOX.MapBrowser.${key}`);
+
+/**
+ * Lit le score de similarité d'un résultat, quand l'API en fournit un.
+ * @param {object} result
+ * @returns {number|null}  Le score, ou `null` si l'information est absente.
+ */
+function similarityOf(result) {
+  const score = Number(result?.similarity);
+  return Number.isFinite(score) ? score : null;
+}
+
+/**
+ * Construit la liste des numéros de page à afficher : une fenêtre glissée autour
+ * de la page courante, encadrée par la première et, quand on la connaît, par la
+ * dernière. Les trous sont matérialisés par `null` (points de suspension).
+ *
+ * @param {number} current   Index de la page courante (0 = première).
+ * @param {number|null} last Index de la dernière page, ou `null` si on l'ignore
+ *                           encore : la suite est alors signalée par des points de
+ *                           suspension, jamais par un numéro inventé.
+ * @returns {Array<number|null>}
+ */
+function pageItems(current, last) {
+  const known = last ?? Math.min(current + PAGE_WINDOW, MAX_PAGES - 1);
+  const start = Math.max(0, current - PAGE_WINDOW);
+  const end = Math.min(known, current + PAGE_WINDOW);
+
+  const items = [];
+  if (start > 0) {
+    items.push(0);
+    if (start > 1) items.push(null);
+  }
+  for (let page = start; page <= end; page++) items.push(page);
+  if (last === null) items.push(null);
+  else if (end < last) {
+    if (end < last - 1) items.push(null);
+    items.push(last);
+  }
+  return items;
+}
 
 /**
  * Détermine si Scene Express est disponible ET actif. La création de scène repose
@@ -178,6 +237,12 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
   /** Y a-t-il vraisemblablement une page suivante ? */
   #hasNext = false;
 
+  /** Index de la dernière page connue, ou `null` tant qu'on ne l'a pas atteinte. */
+  #lastPage = null;
+
+  /** Meilleur score de similarité de la page 1, référence du seuil de pertinence. */
+  #baseScore = null;
+
   /** Minuteur de debounce sur la saisie. */
   #debounce = null;
 
@@ -216,7 +281,10 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
         <button type="button" class="ptmb-prev" disabled>
           <i class="fa-solid fa-chevron-left"></i> ${localize("Previous")}
         </button>
-        <span class="ptmb-status"></span>
+        <div class="ptmb-center">
+          <nav class="ptmb-pages" aria-label="${localize("Pagination")}"></nav>
+          <span class="ptmb-status"></span>
+        </div>
         <button type="button" class="ptmb-next" disabled>
           ${localize("Next")} <i class="fa-solid fa-chevron-right"></i>
         </button>
@@ -248,6 +316,10 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
     // repart de la première page.
     input.addEventListener("input", () => {
       this.#query = input.value.trim();
+      // Nouvelle requête : le seuil de pertinence et la dernière page connue
+      // portaient sur l'ancienne, ils ne valent plus rien.
+      this.#lastPage = null;
+      this.#baseScore = null;
       if (this.#debounce) clearTimeout(this.#debounce);
       this.#debounce = setTimeout(() => this.#search(0), 300);
     });
@@ -270,6 +342,15 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
       event.dataTransfer.effectAllowed = "copy";
     });
 
+    // Saut direct à une page depuis les numéros (délégation : ils sont recréés
+    // à chaque recherche).
+    root.querySelector(".ptmb-pages").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-page]");
+      if (!button) return;
+      const page = Number(button.dataset.page);
+      if (Number.isInteger(page) && page !== this.#page) this.#search(page);
+    });
+
     prev.addEventListener("click", () => {
       if (this.#page > 0) this.#search(this.#page - 1);
     });
@@ -288,15 +369,15 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
    */
   async #search(page = 0) {
     const grid = this.element.querySelector(".ptmb-results");
-    const status = this.element.querySelector(".ptmb-status");
     const prev = this.element.querySelector(".ptmb-prev");
     const next = this.element.querySelector(".ptmb-next");
 
+    page = Math.max(0, Math.min(page, MAX_PAGES - 1));
     const query = this.#query.length ? this.#query : NEWEST_QUERY;
     const curr = page * PAGE_SIZE;
 
     const reqId = ++this.#reqId;
-    status.textContent = localize("Searching");
+    this.#showStatus("Searching");
     prev.disabled = true;
     next.disabled = true;
 
@@ -314,16 +395,25 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
       const results = Array.isArray(data.results) ? data.results : [];
 
       // Page vide au-delà de la première : on ne l'affiche pas, on rentre au bord.
+      // Au passage, on sait désormais où s'arrêtent les résultats.
       if (results.length === 0 && page > 0) {
-        this.#hasNext = false;
-        next.disabled = true;
+        this.#lastPage = page - 1;
+        this.#hasNext = this.#page < this.#lastPage;
+        next.disabled = !this.#hasNext;
         prev.disabled = this.#page === 0;
-        status.textContent = localize("PageStatus", { page: this.#page + 1, n: grid.querySelectorAll(".ptmb-tile").length });
+        this.#renderPager();
         return;
       }
 
       this.#page = page;
-      this.#hasNext = results.length >= PAGE_SIZE;
+      // Référence du seuil de pertinence : le meilleur score de la première page.
+      if (page === 0) this.#baseScore = results.length ? similarityOf(results[0]) : null;
+      this.#hasNext = results.length >= PAGE_SIZE
+        && page + 1 < MAX_PAGES
+        && this.#isRelevant(results.at(-1));
+      // On vient de buter sur la fin (plafond ou pertinence) : elle est ici.
+      if (!this.#hasNext) this.#lastPage = page;
+      else if (this.#lastPage !== null && this.#lastPage <= page) this.#lastPage = null;
 
       const fragment = document.createDocumentFragment();
       for (const result of results) fragment.appendChild(this.#buildTile(result));
@@ -332,14 +422,91 @@ class MapBrowserApp extends foundry.applications.api.ApplicationV2 {
 
       prev.disabled = page === 0;
       next.disabled = !this.#hasNext;
-      status.textContent = results.length
-        ? localize("PageStatus", { page: page + 1, n: results.length })
-        : localize("NoResults");
+      // Les numéros disent déjà où l'on est : le statut ne sert plus qu'aux
+      // messages transitoires (recherche, résultat vide, erreur).
+      if (results.length) this.#renderPager();
+      else this.#showStatus("NoResults");
     } catch (err) {
       if (reqId !== this.#reqId) return;
       console.error("Personal Toolbox | Map Browser |", err);
-      status.textContent = localize("SearchError");
+      this.#showStatus("SearchError");
     }
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Affiche un message transitoire à la place des numéros de page.
+   * @param {string} key  Clé de localisation, relative à `MapBrowser`.
+   */
+  #showStatus(key) {
+    const status = this.element.querySelector(".ptmb-status");
+    const pages = this.element.querySelector(".ptmb-pages");
+    if (pages) pages.hidden = true;
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = localize(key);
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Le dernier résultat d'une page est-il encore assez proche de la requête pour
+   * qu'il vaille la peine d'en proposer une suivante ?
+   *
+   * L'API ne filtre pas : elle classe tout son corpus par similarité et sert une
+   * tranche de 30. Sans ce garde-fou, on proposerait des centaines de pages dont
+   * l'immense majorité n'a aucun rapport avec ce qui a été tapé.
+   *
+   * @param {object} last  Dernier résultat de la page qui vient d'arriver.
+   * @returns {boolean}  `true` aussi quand l'API ne fournit pas de score : dans le
+   *                     doute, on ne bride pas la navigation.
+   */
+  #isRelevant(last) {
+    const score = similarityOf(last);
+    if (score === null || this.#baseScore === null || this.#baseScore <= 0) return true;
+    return score >= this.#baseScore * RELEVANCE_RATIO;
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * (Re)construit les numéros de page : une fenêtre glissée autour de la page
+   * courante, encadrée par la première et (quand on la connaît) la dernière page.
+   *
+   * Aucune requête supplémentaire : afficher les voisins de la page courante ne
+   * demande pas de connaître le total. Tant que la fin n'a pas été atteinte, elle
+   * est signalée par des points de suspension plutôt que par un numéro inventé.
+   */
+  #renderPager() {
+    const nav = this.element.querySelector(".ptmb-pages");
+    const status = this.element.querySelector(".ptmb-status");
+    if (!nav) return;
+    if (status) status.hidden = true;
+    nav.hidden = false;
+
+    const fragment = document.createDocumentFragment();
+    for (const item of pageItems(this.#page, this.#lastPage)) {
+      if (item === null) {
+        const gap = document.createElement("span");
+        gap.className = "ptmb-gap";
+        gap.textContent = "...";
+        fragment.append(gap);
+        continue;
+      }
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "ptmb-page";
+      button.dataset.page = String(item);
+      button.textContent = String(item + 1);
+      button.setAttribute("aria-label", localize("GoToPage", { page: item + 1 }));
+      if (item === this.#page) {
+        button.classList.add("active");
+        button.setAttribute("aria-current", "page");
+      }
+      fragment.append(button);
+    }
+    nav.replaceChildren(fragment);
   }
 
   /* -------------------------------------------- */

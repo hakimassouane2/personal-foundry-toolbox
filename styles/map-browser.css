@@ -217,11 +217,47 @@
     width: auto;
   }
 
-  .ptmb-status {
+  .ptmb-center {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .ptmb-status {
     text-align: center;
     font-size: var(--font-size-12, 12px);
     opacity: 0.7;
+  }
+
+  .ptmb-pages {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .ptmb-page {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 26px;
+    padding: 0 5px;
+    line-height: 24px;
+    font-size: var(--font-size-12, 12px);
+    text-align: center;
+  }
+
+  .ptmb-page.active {
+    font-weight: bold;
+    border-color: var(--color-warm-2, #c9a959);
+    color: var(--color-warm-1, #f0d98a);
+  }
+
+  .ptmb-gap {
+    flex: 0 0 auto;
+    padding: 0 2px;
+    font-size: var(--font-size-12, 12px);
+    opacity: 0.5;
   }
 
   /* ------------------------------------------------ */
