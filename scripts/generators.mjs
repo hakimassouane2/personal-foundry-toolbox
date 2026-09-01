@@ -17,6 +17,7 @@
  * (voir `generators/grammar.mjs`). Seule l'interface est localisée.
  */
 
+import { ambianceGenerator } from "./generators/ambiance.mjs";
 import { namesGenerator } from "./generators/names.mjs";
 import { tavernMenuGenerator } from "./generators/tavern-menu.mjs";
 
@@ -34,7 +35,7 @@ const TOOL = "pt-generators";
 const JOURNAL_NAME = "Générateurs";
 
 /** Générateurs disponibles, dans l'ordre des onglets. */
-const GENERATORS = [tavernMenuGenerator, namesGenerator];
+const GENERATORS = [tavernMenuGenerator, namesGenerator, ambianceGenerator];
 
 const localize = (key, data) =>
   data ? game.i18n.format(`PERSONAL_TOOLBOX.Generators.${key}`, data)

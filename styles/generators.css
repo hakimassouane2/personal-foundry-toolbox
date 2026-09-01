@@ -88,6 +88,7 @@
   .ptg-row {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
   }
 
@@ -130,6 +131,13 @@
     border-color: var(--color-border-highlight);
     color: var(--color-text-primary);
     font-weight: bold;
+  }
+
+  .ptg-hint {
+    flex: 1;
+    font-size: var(--font-size-12);
+    color: var(--color-text-subtle);
+    font-style: italic;
   }
 
   .ptg-controls .ptg-roll {
@@ -274,7 +282,7 @@
   }
 
   /* ------------------------------------------------ */
-  /*  Listes de noms                                   */
+  /*  Listes de propositions à copier                  */
   /* ------------------------------------------------ */
 
   /* Une famille à colonne unique occupe toute la largeur ; seules celles qui se
@@ -307,7 +315,13 @@
     gap: 2px 10px;
   }
 
-  .ptg-names .ptg-name-item {
+  /* Les entrées longues prennent la ligne entière : serrées dans une grille
+     étroite, elles se replieraient sur trois lignes. */
+  .ptg-names.wide {
+    grid-template-columns: 1fr;
+  }
+
+  .ptg-names .ptg-keyword {
     width: auto;
     margin: 0;
     padding: 3px 6px;
@@ -322,7 +336,7 @@
     transition: background-color 120ms ease;
   }
 
-  .ptg-names .ptg-name-item:hover {
+  .ptg-names .ptg-keyword:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: var(--color-border-light-tertiary);
     box-shadow: none;
@@ -330,7 +344,7 @@
 
   /* Confirmation de copie : un simple éclat de couleur sur le nom cliqué. Une
      notification par copie masquerait la liste qu'on est en train de lire. */
-  .ptg-names .ptg-name-item.copied {
+  .ptg-names .ptg-keyword.copied {
     background: var(--color-warm-2);
     border-color: var(--color-border-highlight);
     transition: none;

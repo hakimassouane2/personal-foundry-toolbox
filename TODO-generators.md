@@ -1,12 +1,20 @@
 # Générateurs : suite et idées écartées
 
-## À faire ensuite
+## Pistes pour le générateur d'ambiance
 
-**Générateur d'ambiance.** Des mots-clés de description par type de lieu, à
-lancer d'un coup d'œil : pour une taverne, « bois, feu qui crépite, chopes,
-sifflement, sciure ». Prévoir un choix de lieu (taverne, temple, échoppe,
-ruelle, forêt, donjon, marché) et une sortie en liste courte, pas en phrases :
-c'est le MJ qui fait la phrase, le générateur ne fournit que la matière.
+Huit types de lieu, trois sens plus une colonne de détails. Le parti pris est
+de s'arrêter à la matière brute : une phrase générée s'entend comme telle à la
+table, une perception concrète se reformule en une seconde. Les extensions
+possibles :
+
+- **D'autres lieux.** Une entrée dans `PLACES` suffit, la pastille se construit
+  toute seule. Manquent surtout la route, le campement, la prison, le champ de
+  bataille et l'intérieur de navire.
+- **Une variante par moment ou par météo.** Une taverne à midi ne ressemble pas
+  à la même à trois heures du matin. Ce serait un second axe de pastilles, et
+  autant de sous-tables : le plus coûteux en écriture des trois pistes.
+- **Une colonne « ce qui cloche »**, distincte des détails : non plus ce qui
+  accroche l'œil, mais ce qui ne devrait pas être là.
 
 ## Pistes pour le générateur de noms
 

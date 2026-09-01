@@ -15,6 +15,7 @@
 
 import { ANCESTRIES, HUMAN } from "./ancestries-data.mjs";
 import { agree, at, cap, def, noun, of, pick, pickMany } from "./grammar.mjs";
+import { copyKeyword, esc, renderKeywordSection } from "./keyword-list.mjs";
 import { ORDER, PLACE, SIGN } from "./names-data.mjs";
 
 const localize = (key, data) =>
@@ -89,8 +90,13 @@ function buildPerson(gender, ancestry) {
   switch (pickForm(ancestry)) {
     case "particle":
       return `${first} ${pick(ancestry.particles)}`;
-    case "epithet":
-      return `${first} ${agree(pick(ancestry.epithets), { g: gender, pl: false })}`;
+    case "epithet": {
+      // « Fauve la Fauve » : quelques prénoms sont aussi des adjectifs, et se
+      // retrouvent des deux côtés. On écarte l'épithète qui reprend le prénom,
+      // plutôt que d'interdire à une table ce qui est bon dans l'autre.
+      const epithets = ancestry.epithets.filter((e) => !e.some((form) => form.endsWith(` ${first}`)));
+      return `${first} ${agree(pick(epithets), { g: gender, pl: false })}`;
+    }
     case "patronymic": {
       // Le patronyme se réfère toujours au père, d'où `firstMale` quel que soit
       // le genre de la personne nommée. On écarte son propre prénom, sans quoi
@@ -284,29 +290,6 @@ export function generateNames(groups, ancestryKey = HUMAN.key) {
 /*  Panneau                                      */
 /* -------------------------------------------- */
 
-/** Échappe le texte destiné à `innerHTML`. */
-const esc = (str) => String(str).replace(/[&<>"]/g, (c) =>
-  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-/**
- * Une colonne de propositions, précédée de son intitulé quand elle en a un.
- * Une famille à colonne unique n'affiche pas d'intitulé : le titre de section
- * le dit déjà.
- * @param {{key: string|undefined, names: string[]}} column
- * @returns {string}
- */
-function renderColumn(column) {
-  const heading = column.key
-    ? `<h4 class="ptg-column-title">${esc(localize(`Column.${column.key}`))}</h4>`
-    : "";
-
-  const names = column.names.map((name) => `
-    <button type="button" class="ptg-name-item" data-name="${esc(name)}"
-            data-tooltip="${esc(localize("CopyHint"))}">${esc(name)}</button>`).join("");
-
-  return `<div class="ptg-column">${heading}<div class="ptg-names">${names}</div></div>`;
-}
-
 /** Familles retenues et ascendance choisie, conservées le temps de la session. */
 const lastUsed = {
   groups: new Set(SECTIONS.map((s) => s.id)),
@@ -393,8 +376,8 @@ class NamesPanel {
       const heading = event.target.closest(".ptg-section-title");
       if (heading) return this.#rerollSection(heading.closest(".ptg-section").dataset.section);
 
-      const name = event.target.closest(".ptg-name-item");
-      if (name) this.#copy(name);
+      const keyword = event.target.closest(".ptg-keyword");
+      if (keyword) copyKeyword(keyword);
     });
   }
 
@@ -420,35 +403,21 @@ class NamesPanel {
     this.#render();
   }
 
-  /**
-   * Copie un nom dans le presse-papier. Le retour visuel se fait sur l'élément
-   * cliqué plutôt qu'en notification : on en copie plusieurs à la suite, et
-   * autant de notifications masqueraient la liste qu'on est en train de lire.
-   * @param {HTMLElement} element
-   */
-  #copy(element) {
-    const text = element.dataset.name ?? element.textContent.trim();
-    game.clipboard.copyPlainText(text);
-
-    element.classList.add("copied");
-    setTimeout(() => element.classList.remove("copied"), 900);
-  }
-
-  /* -------------------------------------------- */
-
   /** Redessine les listes en préservant la position de défilement. */
   #render() {
     const menu = this.element.querySelector(".ptg-menu");
     const scroll = menu.scrollTop;
 
-    menu.innerHTML = this.#sections.map((section) => `
-      <section class="ptg-section" data-section="${section.id}">
-        <h3 class="ptg-section-title" data-tooltip="${esc(localize("RerollSection"))}">
-          <span>${esc(localize(`Section.${section.id}`))}</span>
-          <i class="fa-solid fa-rotate"></i>
-        </h3>
-        <div class="ptg-columns${section.columns.length > 1 ? " split" : ""}">${section.columns.map(renderColumn).join("")}</div>
-      </section>`).join("");
+    menu.innerHTML = this.#sections.map((section) => renderKeywordSection({
+      id: section.id,
+      title: localize(`Section.${section.id}`),
+      rerollTooltip: localize("RerollSection"),
+      itemTooltip: localize("CopyHint"),
+      columns: section.columns.map((column) => ({
+        label: column.key ? localize(`Column.${column.key}`) : undefined,
+        names: column.names
+      }))
+    })).join("");
 
     menu.scrollTop = scroll;
   }
