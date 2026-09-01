@@ -14,6 +14,8 @@
   "PERSONAL_TOOLBOX.MapBrowser.Downloading": "Téléchargement de « {title} »…",
   "PERSONAL_TOOLBOX.MapBrowser.SceneCreated": "Scène créée : « {title} »",
   "PERSONAL_TOOLBOX.MapBrowser.DownloadFailed": "Impossible de télécharger « {title} ».",
+  "PERSONAL_TOOLBOX.MapBrowser.Keybinding": "Navigateur de maps : ouvrir",
+  "PERSONAL_TOOLBOX.MapBrowser.KeybindingHint": "Ouvre la fenêtre de recherche de battlemaps (ou la ramène au premier plan si elle est déjà ouverte).",
   "PERSONAL_TOOLBOX.MapBrowser.SceneExpressMissing": "Scene Express doit être installé et activé pour créer des scènes depuis le navigateur de maps.",
   "PERSONAL_TOOLBOX.SharedTimer.Heading": "Timer partagé",
   "PERSONAL_TOOLBOX.SharedTimer.Minutes": "min",

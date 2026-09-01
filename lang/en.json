@@ -14,6 +14,8 @@
   "PERSONAL_TOOLBOX.MapBrowser.Downloading": "Downloading “{title}”…",
   "PERSONAL_TOOLBOX.MapBrowser.SceneCreated": "Scene created: “{title}”",
   "PERSONAL_TOOLBOX.MapBrowser.DownloadFailed": "Could not download “{title}”.",
+  "PERSONAL_TOOLBOX.MapBrowser.Keybinding": "Map Browser: open",
+  "PERSONAL_TOOLBOX.MapBrowser.KeybindingHint": "Opens the battlemap search window (or brings it to the front if already open).",
   "PERSONAL_TOOLBOX.MapBrowser.SceneExpressMissing": "Scene Express must be installed and enabled to create scenes from the Map Browser.",
   "PERSONAL_TOOLBOX.SharedTimer.Heading": "Shared Timer",
   "PERSONAL_TOOLBOX.SharedTimer.Minutes": "min",

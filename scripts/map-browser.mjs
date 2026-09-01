@@ -15,7 +15,7 @@
  * la création de la scène et de la miniature, en respectant tous ses réglages.
  */
 
-const MODULE_ID = "personal-toolbox";
+const MODULE_ID = "personal-foundry-toolbox";
 
 /** Identifiant du groupe de contrôles ajouté à la barre d'outils. */
 const MB_CONTROL = "map-browser";
@@ -516,3 +516,19 @@ Hooks.on("getSceneControlButtons", (controls) => {
 });
 
 Hooks.once("ready", () => installSceneExpressBridge());
+
+Hooks.once("init", () => {
+  // Le hook `init` précède le chargement des traductions : on passe des clés,
+  // que Foundry résout au moment d'afficher la configuration des raccourcis.
+  game.keybindings.register(MODULE_ID, "mapBrowser", {
+    name: "PERSONAL_TOOLBOX.MapBrowser.Keybinding",
+    hint: "PERSONAL_TOOLBOX.MapBrowser.KeybindingHint",
+    editable: [{ key: "KeyM" }],
+    restricted: true,
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+    onDown: () => {
+      MapBrowserApp.show();
+      return true;
+    }
+  });
+});
