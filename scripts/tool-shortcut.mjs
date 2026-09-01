@@ -10,7 +10,14 @@
  * premier contrôle visible, l'emplacement 2 le deuxième visible, et ainsi de suite.
  */
 
-const MODULE_ID = "tool-shortcut";
+/**
+ * Namespace des raccourcis. Ce doit être l'identifiant réel du module : Foundry
+ * s'en sert pour retrouver le paquet auquel rattacher chaque raccourci dans la
+ * configuration des contrôles. Un namespace qui ne correspond à aucun paquet
+ * installé, comme le « tool-shortcut » d'origine, envoie les neuf raccourcis
+ * dans la catégorie « Non répertorié ».
+ */
+const MODULE_ID = "personal-foundry-toolbox";
 
 /** Nombre d'emplacements de raccourci à enregistrer. */
 const NUM_SLOTS = 9;
