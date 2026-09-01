@@ -1,0 +1,358 @@
+@layer modules { @layer toolbox-generators {
+
+  /* ------------------------------------------------ */
+  /*  Fenêtre                                          */
+  /* ------------------------------------------------ */
+
+  #personal-toolbox-generators .window-content {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .ptg-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ------------------------------------------------ */
+  /*  Onglets                                          */
+  /* ------------------------------------------------ */
+
+  .ptg-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 8px 8px 0;
+    flex: 0 0 auto;
+  }
+
+  .ptg-tabs .ptg-tab {
+    flex: 0 0 auto;
+    width: auto;
+    margin: 0;
+    padding: 6px 14px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    background: none;
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-13);
+    line-height: 1;
+  }
+
+  .ptg-tabs .ptg-tab:hover {
+    color: var(--color-text-primary);
+    box-shadow: none;
+  }
+
+  .ptg-tabs .ptg-tab.active {
+    background: rgba(0, 0, 0, 0.18);
+    border-color: var(--color-border-light-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  /* ------------------------------------------------ */
+  /*  Panneau                                          */
+  /* ------------------------------------------------ */
+
+  .ptg-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .ptg-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ------------------------------------------------ */
+  /*  Barre de réglages                                */
+  /* ------------------------------------------------ */
+
+  .ptg-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    border-top: 1px solid var(--color-border-light-tertiary);
+    border-bottom: 1px solid var(--color-border-light-tertiary);
+    flex: 0 0 auto;
+  }
+
+  .ptg-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ptg-groups {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+  }
+
+  /* `.ptg-row` impose `display: flex`, ce qui l'emporte sur le `[hidden]` de la
+     feuille du navigateur : sans cette règle, masquer une rangée n'aurait
+     aucun effet. */
+  .ptg-controls .ptg-row[hidden] {
+    display: none;
+  }
+
+  /* Les pastilles de réglage : rangs d'établissement et sections retenues. */
+  .ptg-controls .ptg-chip {
+    flex: 1 1 auto;
+    width: auto;
+    margin: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--color-border-light-tertiary);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.15);
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-12);
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .ptg-controls .ptg-chip:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-border-highlight);
+    box-shadow: none;
+  }
+
+  .ptg-controls .ptg-chip.active {
+    background: var(--color-warm-2);
+    border-color: var(--color-border-highlight);
+    color: var(--color-text-primary);
+    font-weight: bold;
+  }
+
+  .ptg-controls .ptg-roll {
+    flex: 0 0 auto;
+    width: auto;
+    margin: 0;
+    padding: 4px 14px;
+    border: 1px solid var(--color-border-highlight);
+    border-radius: 4px;
+    background: var(--color-warm-1);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-13);
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  /* ------------------------------------------------ */
+  /*  La carte                                         */
+  /* ------------------------------------------------ */
+
+  .ptg-menu {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 18px 18px;
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .ptg-section {
+    margin-top: 18px;
+  }
+
+  .ptg-menu .ptg-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    padding: 0 0 4px;
+    border-bottom: 1px solid var(--color-border-light-tertiary);
+    font-size: var(--font-size-12);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+  }
+
+  .ptg-menu .ptg-section-title:hover {
+    color: var(--color-text-primary);
+    border-bottom-color: var(--color-border-highlight);
+  }
+
+  /* L'invitation à relancer ne se montre qu'au survol : la carte doit d'abord
+     se lire, les commandes ne viennent qu'ensuite. */
+  .ptg-section-title > i {
+    opacity: 0;
+    font-size: var(--font-size-10);
+    transition: opacity 120ms ease;
+  }
+
+  .ptg-section-title:hover > i {
+    opacity: 0.8;
+  }
+
+  .ptg-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ptg-item {
+    padding: 5px 6px;
+    margin: 0 -6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+
+  .ptg-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .ptg-line {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  .ptg-name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: var(--font-size-14);
+    color: var(--color-text-primary);
+  }
+
+  .ptg-star {
+    font-size: var(--font-size-10);
+    color: var(--color-warm-2);
+    vertical-align: middle;
+  }
+
+  /* Les pointillés d'une vraie carte, qui relient l'intitulé à son prix. */
+  .ptg-dots {
+    flex: 1 1 auto;
+    min-width: 12px;
+    margin: 0 4px;
+    border-bottom: 1px dotted var(--color-text-subtle);
+    opacity: 0.4;
+    transform: translateY(-3px);
+  }
+
+  .ptg-price {
+    flex: 0 0 auto;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: var(--font-size-13);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  .ptg-desc {
+    margin: 1px 0 0;
+    font-size: var(--font-size-12);
+    line-height: 1.4;
+    color: var(--color-text-subtle);
+  }
+
+  .ptg-unit {
+    margin-left: 6px;
+    font-style: italic;
+    opacity: 0.75;
+  }
+
+  .ptg-warn {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 3px 0 0;
+    font-size: var(--font-size-12);
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--color-level-warning, #c9a227);
+  }
+
+  /* ------------------------------------------------ */
+  /*  Listes de noms                                   */
+  /* ------------------------------------------------ */
+
+  /* Une famille à colonne unique occupe toute la largeur ; seules celles qui se
+     subdivisent (hommes / femmes) passent en grille. Sans le modificateur, la
+     colonne unique se retrouverait coincée dans la première piste de la grille,
+     sur la moitié de la largeur disponible. */
+  .ptg-columns.split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: 6px 16px;
+  }
+
+  .ptg-menu .ptg-column-title {
+    margin: 2px 0 3px;
+    padding: 0;
+    border: none;
+    font-size: var(--font-size-11);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-subtle);
+    opacity: 0.85;
+  }
+
+  /* Une grille qui se remplit en colonnes : dix noms tiennent alors dans un
+     coup d'œil, ce qui est tout l'intérêt d'un générateur de noms. */
+  .ptg-names {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+    gap: 2px 10px;
+  }
+
+  .ptg-names .ptg-name-item {
+    width: auto;
+    margin: 0;
+    padding: 3px 6px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: none;
+    color: var(--color-text-primary);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: var(--font-size-14);
+    line-height: 1.35;
+    text-align: left;
+    transition: background-color 120ms ease;
+  }
+
+  .ptg-names .ptg-name-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--color-border-light-tertiary);
+    box-shadow: none;
+  }
+
+  /* Confirmation de copie : un simple éclat de couleur sur le nom cliqué. Une
+     notification par copie masquerait la liste qu'on est en train de lire. */
+  .ptg-names .ptg-name-item.copied {
+    background: var(--color-warm-2);
+    border-color: var(--color-border-highlight);
+    transition: none;
+  }
+
+  /* ------------------------------------------------ */
+  /*  Pied de fenêtre                                  */
+  /* ------------------------------------------------ */
+
+  .ptg-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px;
+    border-top: 1px solid var(--color-border-light-tertiary);
+    flex: 0 0 auto;
+  }
+
+  .ptg-footer .ptg-journal {
+    width: auto;
+    margin: 0;
+    padding: 4px 14px;
+    font-size: var(--font-size-13);
+  }
+
+} }

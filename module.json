@@ -30,7 +30,8 @@
     "scripts/no-token-animation.mjs",
     "scripts/note-icon-background.mjs",
     "scripts/escape-active-window.mjs",
-    "scripts/token-notes.mjs"
+    "scripts/token-notes.mjs",
+    "scripts/generators.mjs"
   ],
   "styles": [
     "styles/toolbox-compact-sidebar.css",
@@ -45,7 +46,8 @@
     "styles/torch-button.css",
     "styles/hide-token-hud-icons.css",
     "styles/elevation-stepper.css",
-    "styles/token-notes.css"
+    "styles/token-notes.css",
+    "styles/generators.css"
   ],
   "relationships": {
     "recommends": [
