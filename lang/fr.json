@@ -183,13 +183,8 @@
   "PERSONAL_TOOLBOX.Generators.Ambiance.Generate": "Générer",
   "PERSONAL_TOOLBOX.Generators.Ambiance.RerollSection": "Relancer cette section",
   "PERSONAL_TOOLBOX.Generators.Ambiance.CopyHint": "Cliquer pour copier",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Hint": "De la matière à reformuler, pas des phrases toutes faites.",
   "PERSONAL_TOOLBOX.Generators.Ambiance.JournalPageName": "Ambiance ({place})",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.senses": "Ce qu'on perçoit",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Section.details": "Détails",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Column.sight": "Vue",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Column.sound": "Sons",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Column.smell": "Odeurs",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.tavern": "Taverne",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.temple": "Temple",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.market": "Marché",
@@ -197,5 +192,8 @@
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.forest": "Forêt",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.underground": "Souterrain",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.manor": "Manoir",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Place.harbour": "Port"
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Place.harbour": "Port",
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sight": "Vue",
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sound": "Sons",
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.smell": "Odeurs"
 }

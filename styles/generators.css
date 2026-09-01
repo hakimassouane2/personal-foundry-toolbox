@@ -133,11 +133,10 @@
     font-weight: bold;
   }
 
-  .ptg-hint {
+  /* Seul sur sa ligne, le bouton prend toute la largeur : c'est l'action
+     principale du panneau, autant lui donner une cible large. */
+  .ptg-controls .ptg-actions .ptg-roll {
     flex: 1;
-    font-size: var(--font-size-12);
-    color: var(--color-text-subtle);
-    font-style: italic;
   }
 
   .ptg-controls .ptg-roll {

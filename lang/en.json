@@ -183,13 +183,8 @@
   "PERSONAL_TOOLBOX.Generators.Ambiance.Generate": "Generate",
   "PERSONAL_TOOLBOX.Generators.Ambiance.RerollSection": "Reroll this section",
   "PERSONAL_TOOLBOX.Generators.Ambiance.CopyHint": "Click to copy",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Hint": "Raw material to rephrase, not ready-made sentences.",
   "PERSONAL_TOOLBOX.Generators.Ambiance.JournalPageName": "Ambiance ({place})",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.senses": "What you notice",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Section.details": "Details",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Column.sight": "Sight",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Column.sound": "Sounds",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Column.smell": "Smells",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.tavern": "Tavern",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.temple": "Temple",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.market": "Market",
@@ -197,5 +192,8 @@
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.forest": "Forest",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.underground": "Underground",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.manor": "Manor",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Place.harbour": "Harbour"
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Place.harbour": "Harbour",
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sight": "Sight",
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sound": "Sounds",
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.smell": "Smells"
 }

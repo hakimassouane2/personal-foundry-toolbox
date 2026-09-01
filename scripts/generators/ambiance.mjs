@@ -24,32 +24,25 @@ const localize = (key, data) =>
 /* -------------------------------------------- */
 
 /**
- * Deux sections. Les trois sens tiennent en colonnes serrées parce que leurs
- * entrées sont courtes ; les détails prennent la largeur, étant des groupes de
- * mots que l'on lit en entier.
+ * Quatre sections de même rang. Chacune n'a qu'une colonne, dont l'intitulé
+ * ferait doublon avec le titre de section : c'est le titre qui porte le nom du
+ * sens, et chaque sens se relance donc indépendamment des autres.
+ *
+ * Les détails prennent la largeur entière, étant des groupes de mots qu'on lit
+ * en entier là où les trois sens tiennent en propositions courtes.
  */
 const SECTIONS = [
-  {
-    id: "senses",
-    columns: [
-      { key: "sight", count: 4 },
-      { key: "sound", count: 4 },
-      { key: "smell", count: 4 }
-    ]
-  },
-  {
-    id: "details",
-    wide: true,
-    // Une seule colonne, dont l'intitulé ferait doublon avec le titre de section.
-    columns: [{ key: "detail", count: 3, unlabelled: true }]
-  }
+  { id: "sight", columns: [{ key: "sight", count: 4 }] },
+  { id: "sound", columns: [{ key: "sound", count: 4 }] },
+  { id: "smell", columns: [{ key: "smell", count: 4 }] },
+  { id: "details", wide: true, columns: [{ key: "detail", count: 3 }] }
 ];
 
 /**
  * Tire le contenu d'une section pour un lieu donné.
  * @param {typeof SECTIONS[number]} section
  * @param {typeof PLACES[number]} place
- * @returns {{id: string, wide: boolean, columns: Array<{key: string, unlabelled: boolean, names: string[]}>}}
+ * @returns {{id: string, wide: boolean, columns: Array<{key: string, names: string[]}>}}
  */
 function fillSection(section, place) {
   return {
@@ -57,7 +50,6 @@ function fillSection(section, place) {
     wide: Boolean(section.wide),
     columns: section.columns.map((column) => ({
       key: column.key,
-      unlabelled: Boolean(column.unlabelled),
       names: pickMany(place[column.key], column.count)
     }))
   };
@@ -105,8 +97,7 @@ class AmbiancePanel {
     return `
       <div class="ptg-controls">
         <div class="ptg-row ptg-places">${places}</div>
-        <div class="ptg-row">
-          <span class="ptg-hint">${esc(localize("Hint"))}</span>
+        <div class="ptg-row ptg-actions">
           <button type="button" class="ptg-roll">
             <i class="fa-solid fa-dice-d20"></i> ${esc(localize("Generate"))}
           </button>
@@ -175,10 +166,9 @@ class AmbiancePanel {
       rerollTooltip: localize("RerollSection"),
       itemTooltip: localize("CopyHint"),
       wide: section.wide,
-      columns: section.columns.map((column) => ({
-        label: column.unlabelled ? undefined : localize(`Column.${column.key}`),
-        names: column.names
-      }))
+      // Aucune colonne n'est intitulée : le titre de section porte déjà le nom
+      // du sens, et chaque section n'en compte qu'une.
+      columns: section.columns.map((column) => ({ names: column.names }))
     })).join("");
 
     menu.scrollTop = scroll;
@@ -195,9 +185,8 @@ class AmbiancePanel {
 
     const body = this.#sections.map((section) => {
       const columns = section.columns.map((column) => {
-        const heading = column.unlabelled ? "" : `<h3>${esc(localize(`Column.${column.key}`))}</h3>`;
         const items = column.names.map((name) => `<li>${esc(name)}</li>`).join("");
-        return `${heading}<ul>${items}</ul>`;
+        return `<ul>${items}</ul>`;
       }).join("");
       return `<h2>${esc(localize(`Section.${section.id}`))}</h2>${columns}`;
     }).join("");
