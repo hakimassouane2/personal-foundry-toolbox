@@ -32,12 +32,18 @@ réglage, récupérable par le même bouton. Un vrai historique demanderait une
 structure de données, une interface de consultation et une politique de purge,
 pour un besoin qui n'existe que si l'on vide par accident.
 
-## Notes par utilisateur
+## Confidentialité réelle entre utilisateurs
 
-Un seul tampon par monde, partagé entre MJ. Un `{ userId: texte }` réglerait le
-cas du co-MJ, au prix d'une indirection permanente pour un usage solo. Le hook
-`updateSetting` couvre déjà le cas gênant : deux onglets ouverts ne se volent
-pas mutuellement la saisie.
+Chacun écrit désormais sur son propre document `User`, et le cœur empêche
+d'écrire chez autrui. Mais Foundry envoie les documents `User` à tous les
+clients : une note reste lisible en console par un curieux, celle du MJ comme
+celle d'un joueur.
+
+Rendre ça étanche demanderait un journal par utilisateur, en propriétaire pour
+lui et « aucun droit » par défaut, puisque Foundry ne transmet pas au client
+les documents qu'on n'a pas le droit de voir. Le prix serait un document de
+plus dans la barre latérale de chacun, et le MJ verrait tout de toute façon.
+Écarté tant que personne n'écrit de secret dans ses notes de partie.
 
 ## Autres pistes non retenues
 
@@ -46,4 +52,6 @@ pas mutuellement la saisie.
   une liaison à un document, trois choses dont ce panneau n'a que faire.
 - **Vidage automatique après export** : c'est exactement le piège à éviter.
   L'export ne touche pas au tampon, le vidage reste un geste explicite.
-- **Notes visibles par les joueurs** : sciemment hors périmètre, tout est MJ.
+- **Une note commune à la table** : un tampon partagé où tout le monde écrit,
+  en plus de la note personnelle. Demanderait un réglage de monde, donc un
+  second chemin de stockage et un choix à faire à chaque ouverture.

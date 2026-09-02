@@ -37,8 +37,6 @@
 .pt-session-notes__text:focus,
 .pt-session-notes__text:focus-visible {
   outline: none;
-  border-color: var(--color-warm-1, #a88b5a);
-  box-shadow: 0 0 4px var(--color-shadow-primary, rgba(255, 255, 255, 0.15));
 }
 
 /* Le cœur aplatit les listes un peu partout : on leur rend leur marqueur, sans
@@ -112,11 +110,11 @@
 .pt-session-notes__actions button.is-destructive {
   border-color: var(--color-level-error-border, #a02020);
   background: var(--color-level-error-bg, rgba(160, 32, 32, 0.15));
-  color: var(--color-level-error, #d04a4a);
+  color: #fff;
 }
 
 .pt-session-notes__actions button.is-destructive:hover {
   border-color: var(--color-level-error, #d04a4a);
   background: var(--color-level-error, #d04a4a);
-  color: var(--color-light-1, #f0f0e0);
+  color: #fff;
 }

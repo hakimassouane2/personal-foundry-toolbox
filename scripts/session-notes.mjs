@@ -26,16 +26,24 @@
    navigateur qui s'en charge. À la fin d'un titre, en revanche, il enchainerait
    un second titre : Entrée y repart donc en paragraphe.
 
-   Le contenu vit dans un réglage de MONDE, ce qui règle les deux exigences
-   d'un coup : les notes d'un monde ne polluent pas les autres, et elles sont
-   stockées côté serveur, donc elles survivent au changement de navigateur ou
-   de machine. Un réglage `client` (localStorage) serait aussi cloisonné par
-   monde mais mourrait avec le cache.
+   Le contenu vit en flag sur le document `User` de son auteur. Chacun a donc
+   les siennes, MJ comme joueurs, et le cœur empêche d'écrire chez autrui. Le
+   stockage étant côté serveur, les notes survivent au changement de navigateur
+   ou de machine, et un utilisateur n'existant que dans un monde, elles restent
+   cloisonnées par monde. Un réglage `client` (localStorage) le serait aussi,
+   mais mourrait avec le cache.
+
+   À ne pas confondre avec de la confidentialité : Foundry envoie les documents
+   `User` à tous les clients, donc une note reste lisible en console par un
+   curieux. Aucune interface ne la montre, rien ne fuite à l'écran, mais ce
+   n'est pas un coffre-fort.
 
    Rien n'est jamais vidé tout seul. Le bouton « vers le journal » recopie les
    notes dans un journal daté SANS toucher au tampon : revenir dans le monde
    trois semaines plus tard retrouve le texte tel quel. Le vidage est un geste
-   séparé, confirmé, et rattrapable une fois.
+   séparé, confirmé, et rattrapable une fois. Le bouton d'export n'apparaît
+   qu'à qui peut créer un journal, ce qu'un joueur ordinaire ne peut pas dans
+   la configuration par défaut de Foundry.
 
    Attention : Foundry coupe tous les raccourcis dès qu'un champ de saisie a
    le focus (`KeyboardManager#hasFocus`). C'est ce qui évite d'ouvrir le
@@ -50,10 +58,22 @@
 const MODULE_ID = "personal-foundry-toolbox";
 const KEY = "PERSONAL_TOOLBOX.SessionNotes";
 
-/** Le tampon courant, en HTML. Réglage de monde, donc cloisonné et côté serveur. */
-const SETTING = "sessionNotes";
+/**
+ * Le tampon courant, en HTML, porté par le document `User` de son auteur. Le
+ * cœur n'autorise chacun à modifier que le sien (`user.isGM || user.id ===
+ * doc.id`, et les flags ne sont pas dans les champs restreints), ce qui donne
+ * exactement ce qu'on veut : le MJ et chaque joueur écrivent chez eux.
+ */
+const FLAG = "sessionNotes";
 
 /** Ce que contenait le tampon avant le dernier vidage, pour pouvoir l'annuler. */
+const BACKUP_FLAG = "sessionNotesBackup";
+
+/**
+ * Anciens réglages de monde, où les notes du MJ vivaient avant d'être rendues
+ * personnelles. Conservés pour la seule reprise au démarrage.
+ */
+const SETTING = "sessionNotes";
 const BACKUP_SETTING = "sessionNotesBackup";
 
 /** Position et taille de la fenêtre, propres à ce navigateur. */
@@ -137,22 +157,60 @@ const TAG_REPLACEMENTS = { B: "strong", I: "em", STRIKE: "s", DIV: "p" };
  * @returns {string}
  */
 function readBuffer() {
-  const raw = game.settings.get(MODULE_ID, SETTING) ?? "";
+  const raw = game.user.getFlag(MODULE_ID, FLAG) ?? "";
   if (!raw.trim()) return "";
   return /<(p|div|ul|ol|br|hr|h[1-6])\b/i.test(raw) ? raw : plainTextToHTML(raw);
 }
 
 /**
- * Écrit le tampon. Seul un MJ peut écrire un réglage de monde, mais toute la
- * fonctionnalité lui est déjà réservée.
+ * Écrit le tampon sur le document de l'utilisateur courant.
  * @param {string} html
  */
 async function writeBuffer(html) {
   try {
-    await game.settings.set(MODULE_ID, SETTING, html);
+    await game.user.setFlag(MODULE_ID, FLAG, html);
   } catch (error) {
     console.error(`${MODULE_ID} | Notes de session : sauvegarde impossible`, error);
   }
+}
+
+/** @returns {string} La dernière chose vidée, tant qu'elle est récupérable. */
+function readBackup() {
+  return game.user.getFlag(MODULE_ID, BACKUP_FLAG) ?? "";
+}
+
+/**
+ * Met de côté ce qu'on vient de vider, ou efface le filet une fois consommé :
+ * un flag vide traînerait dans l'export du monde sans rien apporter.
+ * @param {string} html
+ */
+async function writeBackup(html) {
+  try {
+    if (html) await game.user.setFlag(MODULE_ID, BACKUP_FLAG, html);
+    else await game.user.unsetFlag(MODULE_ID, BACKUP_FLAG);
+  } catch (error) {
+    console.error(`${MODULE_ID} | Notes de session : filet de vidage impossible`, error);
+  }
+}
+
+/**
+ * Reprise des notes écrites quand elles vivaient encore dans un réglage de
+ * monde, partagé et réservé au MJ. On recopie d'abord chez lui, on efface
+ * ensuite : dans cet ordre, une coupure au milieu ne perd rien.
+ */
+async function migrateWorldSetting() {
+  if (!game.user.isGM) return;
+
+  const notes = game.settings.get(MODULE_ID, SETTING) ?? "";
+  const backup = game.settings.get(MODULE_ID, BACKUP_SETTING) ?? "";
+  if (!notes && !backup) return;
+
+  // On ne remplace jamais des notes personnelles déjà écrites.
+  if (notes && !game.user.getFlag(MODULE_ID, FLAG)) await writeBuffer(notes);
+  if (backup && !readBackup()) await writeBackup(backup);
+
+  await game.settings.set(MODULE_ID, SETTING, "");
+  await game.settings.set(MODULE_ID, BACKUP_SETTING, "");
 }
 
 /**
@@ -262,12 +320,34 @@ async function sessionFolder() {
     (folder) => folder.type === "JournalEntry" && folder.name === name
   );
 
-  if (!existing) return Folder.create({ name, type: "JournalEntry", color: FOLDER_COLOR });
+  if (existing) {
+    // Un dossier créé avant que la couleur soit prévue la reçoit au premier
+    // export suivant. Une couleur choisie à la main n'est jamais écrasée.
+    if (existing.color === null && game.user.isGM) await existing.update({ color: FOLDER_COLOR });
+    return existing;
+  }
 
-  // Un dossier créé avant que la couleur soit prévue la reçoit au premier export
-  // suivant. Une couleur choisie à la main, elle, n'est jamais écrasée.
-  if (existing.color === null) await existing.update({ color: FOLDER_COLOR });
-  return existing;
+  // Créer un dossier n'est pas donné à tout le monde : un joueur qui n'en a pas
+  // le droit pose son journal à la racine plutôt que de rater son export.
+  try {
+    return await Folder.create({ name, type: "JournalEntry", color: FOLDER_COLOR });
+  } catch (error) {
+    console.warn(`${MODULE_ID} | Notes de session : dossier impossible à créer`, error);
+    return null;
+  }
+}
+
+/**
+ * Le journal du jour. Celui du MJ garde son nom d'origine ; ceux des joueurs
+ * portent le leur, sans quoi deux personnes en créeraient un du même nom sans
+ * jamais voir celui de l'autre.
+ * @returns {string}
+ */
+function journalName() {
+  const date = sessionDate();
+  return game.user.isGM
+    ? t("JournalName", { date })
+    : t("JournalNamePlayer", { user: game.user.name, date });
 }
 
 /**
@@ -278,14 +358,14 @@ async function sessionFolder() {
  * @returns {Promise<JournalEntry|null>}
  */
 async function exportToJournal(html) {
-  const name = t("JournalName", { date: sessionDate() });
+  const name = journalName();
   const pageName = t("PageName");
   const block = `<p><em>${escapeHTML(timeLabel())}</em></p>${normalizeHTML(html)}`;
 
   try {
     const entry =
       game.journal.getName(name)
-      ?? (await JournalEntry.create({ name, folder: (await sessionFolder()).id }));
+      ?? (await JournalEntry.create({ name, folder: (await sessionFolder())?.id ?? null }));
 
     const page = entry.pages.getName(pageName);
     if (page) {
@@ -430,6 +510,15 @@ class SessionNotesApp extends foundry.applications.api.ApplicationV2 {
     position: { width: 760, height: 840 }
   };
 
+  /**
+   * Le monde figure dans le titre : les notes lui sont propres, et deux mondes
+   * ouverts dans deux onglets ne se distinguent plus une fois la fenêtre posée.
+   * @inheritDoc
+   */
+  get title() {
+    return t("Title", { world: game.world.title });
+  }
+
   /** @inheritDoc */
   async _renderHTML(_context, _options) {
     const wrapper = document.createElement("div");
@@ -437,10 +526,11 @@ class SessionNotesApp extends foundry.applications.api.ApplicationV2 {
       <div class="pt-session-notes">
         <div class="pt-session-notes__text" contenteditable="true" spellcheck="false"></div>
         <div class="pt-session-notes__actions">
-          <button type="button" data-action="journal">
-            <i class="fa-solid fa-book"></i> ${t("ToJournal")}
-          </button>
           <button type="button" data-action="clear"></button>
+          ${game.user.can("JOURNAL_CREATE") ? `
+            <button type="button" data-action="journal">
+              <i class="fa-solid fa-book"></i> ${t("ToJournal")}
+            </button>` : ""}
         </div>
       </div>`;
     return wrapper.firstElementChild;
@@ -479,9 +569,11 @@ class SessionNotesApp extends foundry.applications.api.ApplicationV2 {
 
     field.addEventListener("keydown", (event) => this.#onKeyDown(event));
 
+    // Absent pour qui n'a pas le droit de créer un journal, un joueur ordinaire
+    // dans la configuration par défaut de Foundry.
     this.element
       .querySelector('[data-action="journal"]')
-      .addEventListener("click", () => this.#export());
+      ?.addEventListener("click", () => this.#export());
     this.element
       .querySelector('[data-action="clear"]')
       .addEventListener("click", () => this.#clearOrRestore());
@@ -582,7 +674,7 @@ class SessionNotesApp extends foundry.applications.api.ApplicationV2 {
    */
   #refreshClearButton() {
     const button = this.element.querySelector('[data-action="clear"]');
-    const restorable = this.#isEmpty && !!game.settings.get(MODULE_ID, BACKUP_SETTING);
+    const restorable = this.#isEmpty && !!readBackup();
     if (button.dataset.restorable === String(restorable)) return;
 
     button.dataset.restorable = String(restorable);
@@ -600,11 +692,11 @@ class SessionNotesApp extends foundry.applications.api.ApplicationV2 {
   }
 
   async #clearOrRestore() {
-    const backup = game.settings.get(MODULE_ID, BACKUP_SETTING) ?? "";
+    const backup = readBackup();
     const current = this.#field.innerHTML;
 
     if (this.#isEmpty && backup) {
-      await game.settings.set(MODULE_ID, BACKUP_SETTING, "");
+      await writeBackup("");
       pendingText = null;
       await writeBuffer(backup);
       this.#field.innerHTML = backup;
@@ -619,7 +711,7 @@ class SessionNotesApp extends foundry.applications.api.ApplicationV2 {
       });
       if (!confirmed) return;
 
-      await game.settings.set(MODULE_ID, BACKUP_SETTING, current);
+      await writeBackup(current);
       pendingText = null;
       await writeBuffer("");
       this.#field.innerHTML = "";
@@ -630,11 +722,11 @@ class SessionNotesApp extends foundry.applications.api.ApplicationV2 {
   }
 
   /**
-   * Recharge le contenu quand le réglage a changé ailleurs (un second onglet,
-   * un autre MJ). On ne touche à rien pendant la saisie : personne ne se fait
-   * voler ce qu'il est en train d'écrire.
+   * Recharge le contenu quand la note a changé ailleurs, typiquement un second
+   * onglet ouvert sur le même monde. On ne touche à rien pendant la saisie :
+   * personne ne se fait voler ce qu'il est en train d'écrire.
    */
-  syncFromSetting() {
+  syncFromFlag() {
     if (!this.rendered) return;
     if (pendingText !== null) return;
     if (this.element.contains(document.activeElement)) return;
@@ -662,6 +754,8 @@ function toggleNotes() {
 }
 
 Hooks.once("init", () => {
+  // Les deux réglages de monde ne servent plus qu'à `migrateWorldSetting` :
+  // sans enregistrement, `game.settings.get` refuserait de les lire.
   game.settings.register(MODULE_ID, SETTING, {
     scope: "world",
     config: false,
@@ -689,7 +783,7 @@ Hooks.once("init", () => {
     name: `${KEY}.Keybinding`,
     hint: `${KEY}.KeybindingHint`,
     editable: [{ key: "KeyN" }],
-    restricted: true,
+    restricted: false,
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
     onDown: () => {
       toggleNotes();
@@ -699,7 +793,10 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", () => {
-  if (!game.user.isGM) return;
+  migrateWorldSetting().catch((error) => {
+    console.error(`${MODULE_ID} | Notes de session : reprise des anciennes notes impossible`, error);
+  });
+
   const saved = game.settings.get(MODULE_ID, POSITION_SETTING) ?? {};
   if (saved.width !== LEGACY_SIZE.width || saved.height !== LEGACY_SIZE.height) return;
   // On garde l'endroit où la fenêtre était posée, on rend la taille au défaut.
@@ -711,9 +808,10 @@ Hooks.once("ready", () => {
 // la confirmation, d'où l'anti-rebond court plus haut.
 window.addEventListener("beforeunload", () => { flushSave(); });
 
-Hooks.on("updateSetting", (setting) => {
-  if (setting.key !== `${MODULE_ID}.${SETTING}`) return;
-  instance?.syncFromSetting();
+Hooks.on("updateUser", (user, changes) => {
+  if (user.id !== game.user.id) return;
+  if (!foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${FLAG}`)) return;
+  instance?.syncFromFlag();
 });
 
 /**
@@ -729,7 +827,6 @@ Hooks.on("getSceneControlButtons", (controls) => {
     title: `${KEY}.Open`,
     icon: "fa-solid fa-pen-to-square",
     button: true,
-    visible: game.user.isGM,
     onChange: () => toggleNotes(),
     order: 102
   };

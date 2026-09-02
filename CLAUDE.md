@@ -44,9 +44,20 @@ edite les `.mjs` directement, ils sont charges tels quels.
 - `escape-active-window.mjs` ne ferme que les Application V1/V2 enregistrees,
   pas un panneau DOM brut.
 - Reglage `scope: "world"` = stocke dans la base du monde, donc cloisonne par
-  monde et suit d'une machine a l'autre. `scope: "client"` = localStorage,
-  perdu au vidage du cache. Toute ecriture de reglage monde est diffusee a
-  tous les clients : anti-rebond obligatoire sur une sauvegarde au fil de la frappe.
+  monde et suit d'une machine a l'autre, mais ecrivable par le seul MJ.
+  `scope: "client"` = localStorage, perdu au vidage du cache. Toute ecriture de
+  reglage monde est diffusee a tous les clients : anti-rebond obligatoire sur
+  une sauvegarde au fil de la frappe.
+- Pour du PAR UTILISATEUR, ecrire un flag sur `game.user` : le coeur autorise
+  chacun a modifier son propre document (`user.isGM || user.id === doc.id`, et
+  les flags ne sont pas dans les champs restreints). C'est ce que fait
+  `session-notes.mjs`.
+- Ni un reglage de monde ni un flag d'utilisateur ne sont confidentiels : les
+  deux sont envoyes a tous les clients et se lisent en console. Seul un
+  document a droits (journal, acteur) n'est pas transmis a qui ne peut le voir.
+- `JOURNAL_CREATE` a pour role par defaut TRUSTED : un joueur ordinaire ne peut
+  pas creer de journal. Tester `game.user.can("JOURNAL_CREATE")` avant d'offrir
+  un bouton d'export, et prevoir le cas ou la creation d'un dossier echoue.
 - Deux facons d'editer du texte dans le module, a ne pas confondre :
   `token-notes.mjs` reste en texte brut avec sa grammaire maison (puces,
   `[ ]`/`[x]` cliquables, gras, italique, @UUID) ; `session-notes.mjs` est une
