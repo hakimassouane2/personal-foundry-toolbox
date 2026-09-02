@@ -196,5 +196,17 @@
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.harbour": "Port",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sight": "Vue",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sound": "Sons",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.smell": "Odeurs"
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.smell": "Odeurs",
+  "PERSONAL_TOOLBOX.SessionNotes.Title": "Notes de session",
+  "PERSONAL_TOOLBOX.SessionNotes.Open": "Notes de session",
+  "PERSONAL_TOOLBOX.SessionNotes.Keybinding": "Ouvrir les notes de session",
+  "PERSONAL_TOOLBOX.SessionNotes.KeybindingHint": "Ouvre le bloc-notes de la partie, ou le referme s'il est déjà ouvert. Échap ferme aussi depuis la saisie.",
+  "PERSONAL_TOOLBOX.SessionNotes.ToJournal": "Vers le journal",
+  "PERSONAL_TOOLBOX.SessionNotes.Clear": "Vider",
+  "PERSONAL_TOOLBOX.SessionNotes.Undo": "Annuler le vidage",
+  "PERSONAL_TOOLBOX.SessionNotes.JournalFolder": "Notes de session",
+  "PERSONAL_TOOLBOX.SessionNotes.JournalName": "Notes de session - {date}",
+  "PERSONAL_TOOLBOX.SessionNotes.PageName": "Notes",
+  "PERSONAL_TOOLBOX.SessionNotes.ConfirmTitle": "Vider les notes de session",
+  "PERSONAL_TOOLBOX.SessionNotes.ConfirmContent": "Effacer toutes les notes de ce monde ? Le bouton « Annuler le vidage » les rendra tant qu'aucune nouvelle note n'aura été écrite."
 }

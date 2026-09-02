@@ -1,0 +1,122 @@
+/* =========================================================================
+   Notes de session : bloc-notes ouvert d'une touche pendant la partie
+   ========================================================================= */
+
+/* La zone de saisie occupe toute la fenêtre : la marge du cœur ne ferait
+   qu'ajouter un cadre vide autour d'un cadre. Sélecteur par identifiant, et
+   hors de toute couche, pour passer devant la règle du cœur. */
+#personal-toolbox-session-notes .window-content {
+  padding: 0;
+}
+
+.pt-session-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 4px;
+}
+
+/* Zone éditable, dessinée comme un champ de saisie : c'en est un, même si
+   c'est un `div` qui rend le gras et les listes visibles pendant la frappe. */
+.pt-session-notes__text {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 10px;
+  border: 1px solid var(--input-border-color, var(--color-border-light-tertiary, #4c4c4c));
+  border-radius: 5px;
+  background: var(--input-background-color, rgba(0, 0, 0, 0.1));
+  color: var(--input-text-color, var(--color-text-primary, inherit));
+  font-family: var(--font-primary);
+  font-size: var(--font-size-14, 14px);
+  line-height: 1.45;
+  text-align: left;
+}
+
+.pt-session-notes__text:focus,
+.pt-session-notes__text:focus-visible {
+  outline: none;
+  border-color: var(--color-warm-1, #a88b5a);
+  box-shadow: 0 0 4px var(--color-shadow-primary, rgba(255, 255, 255, 0.15));
+}
+
+/* Le cœur aplatit les listes un peu partout : on leur rend leur marqueur, sans
+   quoi une puce et un paragraphe se ressembleraient trait pour trait. */
+.pt-session-notes__text ul,
+.pt-session-notes__text ol {
+  margin: 0.2em 0;
+  padding-left: 1.6em;
+}
+
+.pt-session-notes__text ul { list-style: disc outside; }
+.pt-session-notes__text ol { list-style: decimal outside; }
+.pt-session-notes__text ul ul { list-style: circle outside; }
+
+.pt-session-notes__text li {
+  margin: 0;
+  padding: 0;
+  line-height: inherit;
+}
+
+.pt-session-notes__text p {
+  margin: 0 0 0.35em;
+}
+
+.pt-session-notes__text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Titres compacts : ceux du cœur sont dimensionnés pour une page de journal et
+   mangeraient la moitié du panneau. Ils gardent une hiérarchie lisible, sans
+   les marges d'un document. */
+.pt-session-notes__text :is(h1, h2, h3) {
+  margin: 0.6em 0 0.25em;
+  border: none;
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-text-emphatic, inherit);
+}
+
+.pt-session-notes__text :is(h1, h2, h3):first-child {
+  margin-top: 0;
+}
+
+.pt-session-notes__text h1 { font-size: 1.4em; }
+.pt-session-notes__text h2 { font-size: 1.2em; }
+.pt-session-notes__text h3 { font-size: 1.05em; }
+
+.pt-session-notes__text hr {
+  margin: 0.7em 0;
+  border: none;
+  border-top: 1px solid var(--color-border-light-tertiary, #6a6a6a);
+}
+
+.pt-session-notes__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.pt-session-notes__actions button {
+  flex: 1;
+  height: 28px;
+  line-height: 26px;
+  font-size: var(--font-size-12, 12px);
+  white-space: nowrap;
+}
+
+/* Le vidage se signale comme tel. Le même bouton, une fois passé en « annuler
+   le vidage », reprend l'apparence neutre : il ne détruit plus rien. */
+.pt-session-notes__actions button.is-destructive {
+  border-color: var(--color-level-error-border, #a02020);
+  background: var(--color-level-error-bg, rgba(160, 32, 32, 0.15));
+  color: var(--color-level-error, #d04a4a);
+}
+
+.pt-session-notes__actions button.is-destructive:hover {
+  border-color: var(--color-level-error, #d04a4a);
+  background: var(--color-level-error, #d04a4a);
+  color: var(--color-light-1, #f0f0e0);
+}

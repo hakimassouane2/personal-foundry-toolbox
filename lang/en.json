@@ -196,5 +196,17 @@
   "PERSONAL_TOOLBOX.Generators.Ambiance.Place.harbour": "Harbour",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sight": "Sight",
   "PERSONAL_TOOLBOX.Generators.Ambiance.Section.sound": "Sounds",
-  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.smell": "Smells"
+  "PERSONAL_TOOLBOX.Generators.Ambiance.Section.smell": "Smells",
+  "PERSONAL_TOOLBOX.SessionNotes.Title": "Session notes",
+  "PERSONAL_TOOLBOX.SessionNotes.Open": "Session notes",
+  "PERSONAL_TOOLBOX.SessionNotes.Keybinding": "Open session notes",
+  "PERSONAL_TOOLBOX.SessionNotes.KeybindingHint": "Opens the session notepad, or closes it if already open. Escape also closes it while typing.",
+  "PERSONAL_TOOLBOX.SessionNotes.ToJournal": "To journal",
+  "PERSONAL_TOOLBOX.SessionNotes.Clear": "Clear",
+  "PERSONAL_TOOLBOX.SessionNotes.Undo": "Undo clear",
+  "PERSONAL_TOOLBOX.SessionNotes.JournalFolder": "Session notes",
+  "PERSONAL_TOOLBOX.SessionNotes.JournalName": "Session notes - {date}",
+  "PERSONAL_TOOLBOX.SessionNotes.PageName": "Notes",
+  "PERSONAL_TOOLBOX.SessionNotes.ConfirmTitle": "Clear session notes",
+  "PERSONAL_TOOLBOX.SessionNotes.ConfirmContent": "Erase every note in this world? The \"Undo clear\" button brings them back until you write a new one."
 }
