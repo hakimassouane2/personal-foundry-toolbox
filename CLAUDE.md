@@ -104,6 +104,15 @@ systèmes), `chat-solid-background.css` (fond uni de l'onglet Chat en v13),
   (`<b>`, `<strike>`) au lieu de styles en ligne, puis les normaliser vers
   `<strong>`/`<s>` avant de verser dans un journal, sinon l'éditeur de la page
   les jette à la première ouverture. Ctrl+B et Ctrl+I sont déjà natifs.
+- `document.execCommand("formatBlock")` n'échange pas la balise d'un bloc déjà
+  formaté : il imbrique le nouveau dans l'ancien, et deux tailles en `em` se
+  multiplient au lieu de se remplacer. Toujours repasser par `<p>` avant de
+  poser un autre titre. Pour défaire une citation, c'est `outdent`, la seule
+  commande qui retire le `<blockquote>` dont Chrome se sert pour l'indentation.
+- Rien ne défait la mise en forme du tout premier bloc d'un `contenteditable` :
+  Retour arrière n'y fond rien, faute de quoi que ce soit en amont. Un champ qui
+  laisse poser un titre doit donc gérer cette touche lui-même, et s'amorcer sur
+  un vrai bloc (`<p><br></p>`) plutôt que sur du texte nu.
 - Toujours écrire dans une zone de saisie par `document.execCommand`, jamais en
   réaffectant `value`/`innerHTML` : la réécriture directe vide la pile
   d'annulation du navigateur et Ctrl+Z ne rend plus rien.
@@ -115,23 +124,33 @@ systèmes), `chat-solid-background.css` (fond uni de l'onglet Chat en v13),
 
 ## Anatomie de `session-notes.mjs`
 
-835 lignes, un seul fichier, dans cet ordre :
+1198 lignes, un seul fichier, dans cet ordre :
 
-1. **Constantes** (l. 58-155) : flags, anciens réglages de monde gardés pour la
+1. **Constantes** (l. 71-206) : flags, anciens réglages de monde gardés pour la
    seule reprise au démarrage, `SAVE_DELAY` (anti-rebond de 800 ms),
    `DAY_START_HOUR` (une séance finie à 00h30 est datée de la veille),
-   `SHORTCUTS` (Ctrl+Maj+X barré, Ctrl+Maj+7/8 listes), `BLOCK_PREFIXES`
-   (auto-format markdown à la frappe), `TAG_REPLACEMENTS` (normalisation HTML).
+   `SHORTCUTS` (Ctrl+Maj+X barré, Ctrl+Maj+7/8 listes, Ctrl+Maj+9 citation),
+   `BLOCK_PREFIXES` (auto-format markdown à la frappe), `TAG_REPLACEMENTS`
+   (normalisation HTML), les deux classes du repli, les motifs `MD_*` du
+   lecteur de markdown.
 2. **Lecture / écriture** (`readBuffer`, `readBackup`, `flushSave`,
    `scheduleSave`) : le tampon vit en flag sur le `User` courant.
-3. **Conversion** (`plainTextToHTML`, `normalizeHTML`) et **datation**
-   (`sessionDate`, `timeLabel`, `journalName`) pour l'export.
+3. **Conversion** (`inlineMarkdown`, `markdownToHTML`, `normalizeHTML`) et
+   **datation** (`sessionDate`, `timeLabel`, `journalName`) pour l'export.
+   `markdownToHTML` sert au collage depuis Obsidian comme à la reprise des
+   notes d'avant l'édition riche, qui étaient du texte nu.
 4. **Manipulation du curseur** (`caretToEnd`, `currentBlock`, `currentLine`,
-   `caretAtEndOf`, `selectContents`, `autoFormatBlock`) : tout passe par
-   `Selection`/`Range` et `document.execCommand`, jamais par `innerHTML`.
-5. **`SessionNotesApp`** (l. 500-742), ApplicationV2 : rendu, écouteurs clavier,
-   export vers journal, vidage avec rattrapage.
-6. **Câblage** (l. 743-835) : `toggleNotes`, réglages et raccourci `N` en
+   `caretAtEndOf`, `caretAtStartOf`, `headingLevel`, `selectContents`,
+   `setBlockFormat`, `autoFormatBlock`) : tout passe par `Selection`/`Range` et
+   `document.execCommand`, jamais par `innerHTML`.
+5. **Repli des titres** (l. 708-789) : `foldedSection` (jusqu'au prochain titre
+   de niveau égal ou supérieur, la règle d'Obsidian), `toggleFold`, `applyFolds`,
+   `flattenHeadings`. Deux classes posées dans le HTML sauvegardé, donc un titre
+   replié le reste ; `applyFolds` recalcule tout à l'ouverture, ce qui garantit
+   qu'aucun bloc ne reste caché sans plus rien pour le rouvrir.
+6. **`SessionNotesApp`** (l. 794-1099), ApplicationV2 : rendu, écouteurs clavier
+   et souris, collage, export vers journal, vidage avec rattrapage.
+7. **Câblage** (l. 1101-1198) : `toggleNotes`, réglages et raccourci `N` en
    `init`, migration des anciennes notes de monde en `ready`, `updateUser` pour
    recharger si la note change ailleurs, outil dans les contrôles de scène.
 

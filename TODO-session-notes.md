@@ -21,8 +21,13 @@ propre a l'export. En attendant, `[ ]` ecrit a la main se relit tres bien.
 
 `token-notes.mjs` garde sa grammaire markdown maison, indispensable parce que
 son panneau lit et ecrit du texte nu. Les notes de session, elles, stockent
-directement le HTML de la zone editable : les deux fichiers n'ont plus rien a
-factoriser, et c'est tres bien ainsi.
+directement le HTML de la zone editable.
+
+Depuis, `session-notes.mjs` a bien un lecteur de markdown, mais dans un seul
+sens et a un seul moment : le collage, pour recuperer un morceau de note
+Obsidian avec ses titres et ses listes. Il ne reecrit jamais de markdown, ne
+relit pas ce qui est deja dans le champ, et n'a donc rien a partager avec la
+grammaire bidirectionnelle de `token-notes.mjs`.
 
 ## Historique versionné
 

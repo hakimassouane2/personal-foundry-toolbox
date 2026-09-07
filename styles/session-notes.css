@@ -23,7 +23,9 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 8px 10px;
+  /* La marge gauche est plus large que les autres : c'est la gouttière où les
+     titres affichent leur chevron de repli. */
+  padding: 8px 10px 8px 26px;
   border: 1px solid var(--input-border-color, var(--color-border-light-tertiary, #4c4c4c));
   border-radius: 5px;
   background: var(--input-background-color, rgba(0, 0, 0, 0.1));
@@ -69,7 +71,11 @@
    mangeraient la moitié du panneau. Ils gardent une hiérarchie lisible, sans
    les marges d'un document. */
 .pt-session-notes__text :is(h1, h2, h3) {
-  margin: 0.6em 0 0.25em;
+  position: relative;
+  /* Le titre déborde dans la gouttière pour y recevoir le clic de repli, et
+     reprend la même largeur en `padding` pour rester aligné sur le reste. */
+  margin: 0.6em 0 0.25em -22px;
+  padding-left: 22px;
   border: none;
   font-family: inherit;
   font-weight: 700;
@@ -84,6 +90,76 @@
 .pt-session-notes__text h1 { font-size: 1.4em; }
 .pt-session-notes__text h2 { font-size: 1.2em; }
 .pt-session-notes__text h3 { font-size: 1.05em; }
+
+/* Un titre imbriqué dans un autre est la séquelle d'un `formatBlock` qui
+   empilait au lieu de remplacer : sans ça, les deux tailles en `em` se
+   multiplient. Le script remet les notes à plat à l'ouverture, cette règle
+   couvre les cas qu'il n'ose pas toucher. */
+.pt-session-notes__text :is(h1, h2, h3) :is(h1, h2, h3) {
+  font-size: 1em;
+}
+
+/* Chevron de repli, dessiné en bordures : le nom de la famille de la fonte
+   d'icônes change d'une version de Foundry à l'autre, pas les bordures. */
+.pt-session-notes__text :is(h1, h2, h3)::before {
+  content: "";
+  position: absolute;
+  top: 0.45em;
+  left: 6px;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.pt-session-notes__text :is(h1, h2, h3):hover::before {
+  opacity: 0.5;
+}
+
+/* Replié : le chevron pointe vers la droite et reste visible, seul indice que
+   le titre cache quelque chose. Les points de suite viennent du CSS, ils ne
+   comptent donc ni dans le texte sauvegardé ni dans l'export. */
+.pt-session-notes__text .pt-folded::before {
+  opacity: 0.8;
+  transform: rotate(-45deg);
+}
+
+.pt-session-notes__text .pt-folded::after {
+  content: " ...";
+  font-weight: 400;
+  opacity: 0.4;
+}
+
+.pt-session-notes__text .pt-folded-away {
+  display: none;
+}
+
+/* Citation. Le cœur ne dessine rien sur `blockquote` dans une fenêtre de
+   module, et la marge par défaut du navigateur la décalerait de 40 pixels. */
+.pt-session-notes__text blockquote {
+  margin: 0.35em 0;
+  padding: 0.1em 0 0.1em 0.7em;
+  border: none;
+  border-left: 3px solid var(--color-border-light-tertiary, #6a6a6a);
+  color: var(--color-text-secondary, inherit);
+  font-style: italic;
+}
+
+.pt-session-notes__text blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Code au fil du texte, reconnu au collage depuis Obsidian. */
+.pt-session-notes__text code {
+  padding: 0 0.25em;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.25);
+  font-family: var(--font-monospace, monospace);
+  font-size: 0.92em;
+}
 
 .pt-session-notes__text hr {
   margin: 0.7em 0;
